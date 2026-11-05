@@ -62,7 +62,7 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
 })();
 </script>
 </head><body><div id="dash-root">
-<p class="site-note">Static snapshot built 2026-11-05 06:07 UTC from the repo (scripts/build_site.py). Numbers are exploration-stage unless a row says otherwise.</p>
+<p class="site-note">Static snapshot built 2026-11-05 10:21 UTC from the repo (scripts/build_site.py). Numbers are exploration-stage unless a row says otherwise.</p>
 <style>
   .pb { display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); }
   .pb-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
@@ -146,6 +146,10 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
   .pb-people button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
   .pb-lede { margin: 0; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); max-width: 75ch; line-height: 1.5; }
   .pb-lede b { color: var(--color-fg); font-weight: 600; }
+  .pb-guide-bar { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); }
+  .pb-guide-bar a { font-size: var(--cds-font-size-body); color: var(--color-fg); text-decoration: none; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); background: var(--color-panel); }
+  .pb-guide-bar a:hover { border-color: var(--color-fg); }
+  .pb-guide-frame { width: 100%; height: 85vh; min-height: 520px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: #fff; }
   [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
   [data-dash-source-state=empty] { color: transparent; }
 </style>
@@ -164,6 +168,7 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
   <nav class="pb-tabs" role="tablist" aria-label="Board sections">
     <button type="button" role="tab" id="tab-results" data-tab="results" aria-selected="true">Results</button>
     <button type="button" role="tab" id="tab-how" data-tab="how" aria-selected="false">How it works</button>
+    <button type="button" role="tab" id="tab-guide" data-tab="guide" aria-selected="false">Guide (PDF)</button>
   </nav>
 
 <!-- how:start -->
@@ -405,6 +410,15 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
   </section>
   <!-- how:end -->
 
+  <section class="pb-tab" id="guide" data-panel="guide" hidden>
+    <p class="pb-lede"><b>The project guide, for a first-time reader.</b> Where we are, how PCD works (with the math typeset and worked by hand), our research question and the four objectives, what we built, and every exploration result so far with its experiment ID. Source: <code>paper/guide/guide.tex</code> in the repo; rebuild with <code>tectonic guide.tex</code>.</p>
+    <div class="pb-guide-bar">
+      <a href="guide.pdf" target="_blank" rel="noopener">Open the PDF in a new tab</a>
+      <a href="guide.pdf" download="PCD-CL_project_guide.pdf">Download</a>
+    </div>
+    <iframe class="pb-guide-frame" data-src="guide.pdf" title="PCD-CL project guide (PDF)" loading="lazy"></iframe>
+  </section>
+
   <section class="pb-tab" id="results-f" data-panel="results-f"></section>
   <section class="pb-tab" id="results-s" data-panel="results-s" hidden></section>
 
@@ -632,26 +646,28 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
     dash.draw(`${p}-toy`, (box) => drawToy(box));
   });
 
-  // ---------- view: whose dashboard × which tab (hash #faris, #salah, #faris-how, #salah-how) ----------
+  // ---------- view: whose dashboard × which tab (hash #faris, #salah, #faris-how, #salah-how, #faris-guide) ----------
   const view = { p: 'f', tab: 'results' };
   const CHARTS = ['pareto', 'toy'];
   const showView = (redraw = true) => {
-    const panel = view.tab === 'how' ? 'how' : 'results-' + view.p;
+    const panel = view.tab === 'results' ? 'results-' + view.p : view.tab;
+    if (view.tab === 'guide') document.querySelectorAll('.pb-guide-frame:not([src])').forEach((f) => { f.src = f.dataset.src; });  // load the PDF only when asked
     document.querySelectorAll('[data-panel]').forEach((el) => { el.hidden = el.dataset.panel !== panel; });
     document.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === view.tab)));
     document.querySelectorAll('[data-person]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.person === view.p)));
     document.querySelectorAll('.pb-ros .ro').forEach((el) => el.classList.toggle('mine', PEOPLE[view.p].ros.includes(el.dataset.ro) && el.dataset.ro !== 'RO1'));
     if (!redraw) return;
     if (view.tab === 'results') CHARTS.forEach((c) => dash.draw(`${view.p}-${c}`));  // size charts to the now-visible panel
-    else ['gd', 'forget', 'geom'].forEach((n) => dash.draw(n));
+    else if (view.tab === 'how') ['gd', 'forget', 'geom'].forEach((n) => dash.draw(n));
   };
-  const link = () => dash.setLink(PEOPLE[view.p].key + (view.tab === 'how' ? '-how' : ''));
+  const link = () => dash.setLink(PEOPLE[view.p].key + (view.tab === 'results' ? '' : '-' + view.tab));
   document.querySelectorAll('[data-person]').forEach((b) => b.addEventListener('click', () => { view.p = b.dataset.person; showView(); link(); }));
   document.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => { view.tab = b.dataset.tab; showView(); link(); }));
   const fromHash = () => {
     const [who, tab] = location.hash.slice(1).split('-');
     view.p = who === 'salah' ? 's' : 'f';
-    view.tab = tab === 'how' || who === 'how' ? 'how' : 'results';
+    const t = ['how', 'guide'].find((x) => tab === x || who === x);
+    view.tab = t || 'results';
   };
   fromHash();
   showView(false);  // the first draw happens when data arrives
