@@ -62,7 +62,7 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
 })();
 </script>
 </head><body><div id="dash-root">
-<p class="site-note">Static snapshot built 2026-11-05 04:46 UTC from the repo (scripts/build_site.py). Numbers are exploration-stage unless a row says otherwise.</p>
+<p class="site-note">Static snapshot built 2026-11-05 05:00 UTC from the repo (scripts/build_site.py). Numbers are exploration-stage unless a row says otherwise.</p>
 <style>
   .pb { display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); }
   .pb-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
@@ -129,6 +129,17 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
   .pb-ros .ro { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
   .pb-ros .ro .who { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
   .pb-ros .ro p { margin: 0; font-size: var(--cds-font-size-caption); line-height: 1.5; }
+  .pb-ros .ro.mine { border-color: var(--color-fg-muted); }
+  .pb-ros .ro.mine .who::after { content: " · yours"; color: var(--color-fg); }
+  .pb-people { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: var(--cds-gap-md); margin-bottom: calc(-1 * var(--cds-gap-md)); }
+  .pb-people button { font: inherit; text-align: left; cursor: pointer; background: var(--color-panel); color: var(--color-fg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .pb-people button b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-heading); }
+  .pb-people button span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .pb-people button .cnt { font-variant-numeric: tabular-nums; }
+  .pb-people button[aria-pressed="true"] { border-color: var(--color-fg); box-shadow: inset 0 0 0 1px var(--color-fg); }
+  .pb-people button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .pb-lede { margin: 0; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); max-width: 75ch; line-height: 1.5; }
+  .pb-lede b { color: var(--color-fg); font-weight: 600; }
   [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
   [data-dash-source-state=empty] { color: transparent; }
 </style>
@@ -136,8 +147,13 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
 <div class="pb">
   <header class="pb-head" id="top">
     <h1>PCD-CL Results Board</h1>
-    <p><b data-draw="ro-verified" data-source="summary" data-field="ro_verified" data-row="0">—</b> of <b data-draw="ro-total" data-source="summary" data-field="ro_total" data-row="0">—</b> research objectives verified, <b data-draw="runs-total" data-source="summary" data-field="runs_total" data-row="0">—</b> continual-learning runs merged from both machines, and <b data-draw="tests-failed" data-source="summary" data-field="tests_failed" data-row="0">—</b> failing checks. Only runs that pass the shared protocol check appear here.</p>
+    <p><b data-draw="ro-verified" data-source="summary" data-field="ro_verified" data-row="0">—</b> of <b data-draw="ro-total" data-source="summary" data-field="ro_total" data-row="0">—</b> research objectives verified, <b data-draw="runs-total" data-source="summary" data-field="runs_total" data-row="0">—</b> continual-learning runs merged from both machines, and <b data-draw="tests-failed" data-source="summary" data-field="tests_failed" data-row="0">—</b> failing checks. Only runs that pass the shared protocol check appear here. Pick whose dashboard to open.</p>
   </header>
+
+  <nav class="pb-people" aria-label="Whose dashboard">
+    <button type="button" data-person="f" aria-pressed="true"><b>Faris</b><span>RO2 · rehearsal form (H1), plus shared RO1</span><span class="cnt"><span data-draw="pick-f" data-source="summary" data-field="axis_faris" data-row="0">—</span> runs</span></button>
+    <button type="button" data-person="s" aria-pressed="false"><b>Salah</b><span>RO3 · regularization form (H2) · RO4 · task boundaries (H3), plus shared RO1</span><span class="cnt"><span data-draw="pick-s" data-source="summary" data-field="axis_salah" data-row="0">—</span> runs</span></button>
+  </nav>
 
   <nav class="pb-tabs" role="tablist" aria-label="Board sections">
     <button type="button" role="tab" id="tab-results" data-tab="results" aria-selected="true">Results</button>
@@ -223,118 +239,100 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
       <span class="kicker">Step 5 · What we test</span>
       <h3 style="margin:0;font-size:var(--cds-font-size-heading);font-weight:var(--cds-font-weight-medium)">Four questions nobody has answered for continual learning</h3>
       <div class="pb-ros">
-        <div class="ro"><b>RO1 · Is it really PCD?</b><span class="who">Shared</span><p>Our solver against the professor's code, closed forms and KKT conditions, and its reductions to GEM, A-GEM and ε-SOFT-GEM. The status is live in the Results tab.</p></div>
-        <div class="ro"><b>RO2 · Does a margin help?</b><span class="who">Faris · rehearsal form</span><p>Does τ &gt; 0 with per-task normalized walls forget less than GEM and ER, without hurting learning?</p></div>
-        <div class="ro"><b>RO3 · Does τ beat λ?</b><span class="who">Salah · regularization form</span><p>With old tasks as EWC penalties and the same small tuning budget, does PCD's τ beat EWC's λ when the penalty's scale is unknown?</p></div>
-        <div class="ro"><b>RO4 · What happens at task switches?</b><span class="who">Salah leads</span><p>The new gradient's size jumps at each switch. Should the EMA statistics reset, carry over, or be kept per task?</p></div>
+        <div class="ro" data-ro="RO1"><b>RO1 · Is it really PCD?</b><span class="who">Shared</span><p>Our solver against the professor's code, closed forms and KKT conditions, and its reductions to GEM, A-GEM and ε-SOFT-GEM. The status is live in the Results tab.</p></div>
+        <div class="ro" data-ro="RO2"><b>RO2 · Does a margin help?</b><span class="who">Faris · rehearsal form</span><p>Does τ &gt; 0 with per-task normalized walls forget less than GEM and ER, without hurting learning?</p></div>
+        <div class="ro" data-ro="RO3"><b>RO3 · Does τ beat λ?</b><span class="who">Salah · regularization form</span><p>With old tasks as EWC penalties and the same small tuning budget, does PCD's τ beat EWC's λ when the penalty's scale is unknown?</p></div>
+        <div class="ro" data-ro="RO4"><b>RO4 · What happens at task switches?</b><span class="who">Salah leads</span><p>The new gradient's size jumps at each switch. Should the EMA statistics reset, carry over, or be kept per task?</p></div>
       </div>
-      <p class="note" style="margin:0">A clean "it doesn't help" is a valid result. The toy rung's real numbers are on the Results tab, in the margin chart.</p>
+      <p class="note" style="margin:0">A clean "it doesn't help" is a valid result. The toy rung's real numbers are on each Results tab, in the margin chart. Your own objectives are outlined.</p>
     </div>
   </section>
 
-  <section class="pb-tab" id="results" data-panel="results">
+  <section class="pb-tab" id="results-f" data-panel="results-f"></section>
+  <section class="pb-tab" id="results-s" data-panel="results-s" hidden></section>
+
+  <!-- One dashboard per person, cloned by the script below: "P-" becomes "f-" (Faris) or "s-" (Salah) in every id and draw name. -->
+  <template id="person-results">
+  <p class="pb-lede" data-draw="P-lede">—</p>
   <div class="pb-tiles">
-    <div class="pb-tile"><span class="lbl">Runs merged</span><span class="num" data-draw="t-runs" data-source="summary" data-field="runs_total" data-row="0">—</span><span class="sub">Faris <span data-draw="t-runs-f" data-source="summary" data-field="runs_faris" data-row="0">—</span> · Salah <span data-draw="t-runs-s" data-source="summary" data-field="runs_salah" data-row="0">—</span></span></div>
-    <div class="pb-tile"><span class="lbl">Objectives verified</span><span class="num" data-draw="t-ro" data-source="summary" data-field="ro_verified" data-row="0">—</span><span class="sub">of 4 (RO1–RO4)</span></div>
-    <div class="pb-tile"><span class="lbl">Checks passing</span><span class="num" data-draw="t-tests" data-source="summary" data-field="tests_passed" data-row="0">—</span><span class="sub"><span data-draw="t-tests-f" data-source="summary" data-field="tests_failed" data-row="0">—</span> failing</span></div>
-    <div class="pb-tile"><span class="lbl">Jobs queued or running</span><span class="num" data-draw="t-queue" data-source="summary" data-field="jobs_active" data-row="0">—</span><span class="sub">across all machines</span></div>
+    <div class="pb-tile"><span class="lbl">Runs on this axis</span><span class="num" data-draw="P-t-runs" data-source="summary-P" data-field="runs" data-row="0">—</span><span class="sub" data-draw="P-t-runs-sub">—</span></div>
+    <div class="pb-tile"><span class="lbl">Objectives verified</span><span class="num" data-draw="P-t-ro" data-source="summary-P" data-field="ro_verified" data-row="0">—</span><span class="sub">of <span data-draw="P-t-ro-total" data-source="summary-P" data-field="ro_total" data-row="0">—</span> (<span data-draw="P-t-ro-list">—</span>)</span></div>
+    <div class="pb-tile"><span class="lbl">Checks passing</span><span class="num" data-draw="P-t-tests" data-source="summary-P" data-field="tests_passed" data-row="0">—</span><span class="sub"><span data-draw="P-t-tests-f" data-source="summary-P" data-field="tests_failed" data-row="0">—</span> failing · shared suites</span></div>
+    <div class="pb-tile"><span class="lbl">Jobs queued or running</span><span class="num" data-draw="P-t-queue" data-source="summary-P" data-field="jobs_active" data-row="0">—</span><span class="sub" data-draw="P-t-queue-sub">—</span></div>
   </div>
 
   <h2 class="pb-section">Research objectives</h2>
-  <section class="pb-card" id="objectives">
+  <section class="pb-card" id="P-objectives">
     <h2>Where each objective stands</h2>
-    <p class="note">Status changes only when its evidence exists in the repo.</p>
+    <p class="note">This person's objectives plus the shared one. Status changes only when its evidence exists in the repo.</p>
     <div class="pb-tablewrap">
       <table data-source="objectives" data-row-key="ro">
         <thead><tr><th data-field="ro">RO</th><th data-field="objective">Objective</th><th data-field="owner">Owner</th><th data-field="hypothesis">Hypothesis</th><th data-field="status">Status</th><th data-field="evidence">Evidence</th></tr></thead>
-        <tbody data-draw="objectives-body"></tbody>
+        <tbody data-draw="P-objectives-body"></tbody>
       </table>
     </div>
   </section>
 
   <h2 class="pb-section">Results</h2>
   <div class="pb-grid">
-    <section class="pb-card" id="pareto">
+    <section class="pb-card" id="P-pareto">
       <h2>Final accuracy vs forgetting</h2>
-      <p class="note">One point per run, colored by method. Up and to the left is better: more accuracy kept, less forgotten.</p>
-      <p class="pb-empty" data-empty="runs">No continual-learning runs yet. Points appear once runs are merged.</p>
-      <div class="pb-chart" data-source="runs" data-draw="pareto"></div>
+      <p class="note">One point per run on this axis, colored by method. Up and to the left is better: more accuracy kept, less forgotten.</p>
+      <div class="pb-chart" data-source="runs" data-draw="P-pareto"></div>
     </section>
-    <section class="pb-card" id="toy">
+    <section class="pb-card" id="P-toy">
       <h2>Toy rung: primary progress vs margin τ</h2>
-      <p class="note">R² toy, cos(g̃₀, g̃₁) = −0.80. Past the dashed threshold (Prop. 4.7), PCD increases the new task's loss to first order.</p>
-      <div class="pb-chart" data-source="toy threshold" data-draw="toy"></div>
+      <p class="note">Shared (RO1). R² toy, cos(g̃₀, g̃₁) = −0.80. Past the dashed threshold (Prop. 4.7), PCD increases the new task's loss to first order.</p>
+      <div class="pb-chart" data-source="toy threshold" data-draw="P-toy"></div>
     </section>
   </div>
 
-  <section class="pb-card" id="runs">
-    <h2>All merged runs</h2>
-    <p class="note">Class-incremental metrics from the shared evaluation script; task-incremental final accuracy is shown alongside.</p>
+  <section class="pb-card" id="P-runs">
+    <h2>Runs on this axis</h2>
+    <p class="note" data-draw="P-runs-note">—</p>
     <div class="pb-tablewrap">
       <table data-source="runs" data-row-key="run_id">
-        <thead><tr><th data-field="run_id">Run ID</th><th data-field="owner">Owner</th><th data-field="method">Method</th><th data-field="dataset">Dataset</th><th data-field="tau" class="num">τ</th><th data-field="seed" class="num">Seed</th><th data-field="final_acc" class="num">Final acc</th><th data-field="forgetting" class="num">Forgetting</th><th data-field="learn_acc" class="num">Learning acc</th><th data-field="til_final_acc" class="num">Task-IL acc</th><th data-field="machine">Machine</th></tr></thead>
-        <tbody data-draw="runs-body"></tbody>
+        <thead><tr><th data-field="run_id">Run ID</th><th data-field="exp_id">Exp</th><th data-field="owner">Run by</th><th data-field="method">Method</th><th data-field="dataset">Dataset</th><th data-field="tau" class="num">τ</th><th data-field="seed" class="num">Seed</th><th data-field="final_acc" class="num">Final acc</th><th data-field="forgetting" class="num">Forgetting</th><th data-field="learn_acc" class="num">Learning acc</th><th data-field="til_final_acc" class="num">Task-IL acc</th></tr></thead>
+        <tbody data-draw="P-runs-body"></tbody>
       </table>
     </div>
-    <p class="pb-empty" data-empty="runs">No runs merged yet.</p>
   </section>
 
   <h2 class="pb-section">Pipeline health</h2>
   <div class="pb-grid">
-    <section class="pb-card" id="checks">
+    <section class="pb-card" id="P-checks">
       <h2>Verification checks</h2>
-      <p class="note">Pytest suites, re-run on every board update.</p>
+      <p class="note">Shared pytest suites, re-run on every board update. Both dashboards show the same checks.</p>
       <div class="pb-tablewrap">
         <table data-source="checks" data-row-key="suite">
           <thead><tr><th data-field="suite">Suite</th><th data-field="passed" class="num">Passed</th><th data-field="failed" class="num">Failed</th><th data-field="skipped" class="num">Skipped</th><th data-field="status">Status</th></tr></thead>
-          <tbody data-draw="checks-body"></tbody>
+          <tbody data-draw="P-checks-body"></tbody>
         </table>
       </div>
     </section>
-    <section class="pb-card" id="machines">
-      <h2>Machines and queues</h2>
-      <p class="note">Faris's queue is read live at each update; Salah's comes from his latest results bundle.</p>
+    <section class="pb-card" id="P-machines">
+      <h2>Machine and queue</h2>
+      <p class="note" data-draw="P-machines-note">—</p>
       <div class="pb-tablewrap">
         <table data-source="machines" data-row-key="owner">
           <thead><tr><th data-field="owner">Owner</th><th data-field="machine">Machine</th><th data-field="pending" class="num">Pending</th><th data-field="running" class="num">Running</th><th data-field="done" class="num">Done</th><th data-field="failed" class="num">Failed</th><th data-field="as_of">As of</th></tr></thead>
-          <tbody data-draw="machines-body"></tbody>
+          <tbody data-draw="P-machines-body"></tbody>
         </table>
       </div>
     </section>
   </div>
 
-  <section class="pb-card" id="flow">
-    <h2>How results reach this board</h2>
-    <ol class="pb-flow">
-      <li>Each of us runs experiments from the shared repo. Every run writes <code>runs/&lt;run_id&gt;/</code> on its own machine.</li>
-      <li>Salah runs <code>python scripts/pack_results.py --owner salah</code> and sends Faris the zip.</li>
-      <li>Faris drops it in <code>inbox/</code>, and his AI runs <code>scripts/merge_results.py</code>. It rejects any run scored by a different evaluation script, from another protocol version, or with a malformed run ID.</li>
-      <li><code>scripts/build_dashboard.py</code> rebuilds the data files, and Faris's AI uploads them here.</li>
-    </ol>
+  <section class="pb-card" id="P-flow">
+    <h2>How your results reach this board</h2>
+    <ol class="pb-flow" data-draw="P-flow"></ol>
   </section>
-  </section>
+  </template>
 </div>
 
 <script>
   const pct = d3.format('.1%');
   const fmtNum = (v, f) => (v === '' || v == null || Number.isNaN(Number(v))) ? '' : f(Number(v));
   const rowsOf = (id) => { const d = dash.data(id); return d.status === 'ok' ? d.data : []; };
-
-  dash.calc('summary', {
-    title: 'Board summary',
-    description: 'Counts of merged runs, verified objectives, check results and active jobs.',
-    inputs: ['runs', 'objectives', 'checks', 'machines'],
-    fn: (runs, objectives, checks, machines) => [{
-      runs_total: runs.length,
-      runs_faris: runs.filter((r) => r.owner === 'faris').length,
-      runs_salah: runs.filter((r) => r.owner === 'salah').length,
-      ro_verified: objectives.filter((o) => o.status === 'verified').length,
-      ro_total: objectives.length,
-      tests_passed: d3.sum(checks, (c) => Number(c.passed)),
-      tests_failed: d3.sum(checks, (c) => Number(c.failed)),
-      jobs_active: d3.sum(machines, (m) => Number(m.pending || 0) + Number(m.running || 0)),
-    }],
-  });
 
   dash.calc('threshold', {
     title: 'Primary-descent threshold',
@@ -346,24 +344,93 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
     },
   });
 
-  const summaryField = (field) => (el) => {
-    const s = dash.data('summary');
+  // ---------- two dashboards, one page ----------
+  // Each person's dashboard is the same layout, cloned from <template id="person-results">
+  // and filtered to that person's research axis. RO1 (the solver) and the checks are shared.
+  const PEOPLE = {
+    f: { key: 'faris', name: 'Faris', ros: ['RO1', 'RO2'],
+         axis: 'RO2, the rehearsal form: does a normalized per-task margin τ forget less than GEM and ER (H1)?',
+         // his own runs, minus the scouting he ran for Salah's axis
+         inAxis: (r) => r.owner === 'faris' && !String(r.hypothesis).startsWith('scout') && !['H2', 'H3'].includes(r.hypothesis),
+         runsNote: 'Faris\'s rehearsal-form runs and the reference baselines (ER, GEM, A-GEM, ε-SOFT-GEM, finetune, joint). Class-incremental metrics from the shared evaluation script; task-incremental accuracy alongside.',
+         machinesNote: 'Faris\'s queue, read live at each update.',
+         noMachine: 'No queue status yet.',
+         flow: [
+           'Faris\'s runs need no bundle: after his queue finishes, his AI runs <code>scripts/export_results.py</code> and <code>scripts/build_dashboard.py</code>.',
+           'For Salah\'s runs, Faris drops the zip in <code>inbox/</code> and his AI runs <code>scripts/merge_results.py</code>. It rejects runs scored by a different evaluation script, from another protocol version, or with a malformed run ID.',
+           'The rebuilt data files are uploaded to this board. Nobody types numbers into it.',
+         ] },
+    s: { key: 'salah', name: 'Salah', ros: ['RO1', 'RO3', 'RO4'],
+         axis: 'RO3, the regularization form: does PCD-EWC\'s τ beat EWC\'s λ (H2)? And RO4: should the EMA statistics reset, carry or bank at task switches (H3)?',
+         // his own runs, plus Faris's 1-seed scouting on his axis (F-009 to F-011)
+         inAxis: (r) => r.owner === 'salah' || ['H2', 'H3', 'scout-RO3', 'scout-RO4'].includes(r.hypothesis),
+         runsNote: 'Salah\'s merged runs, plus the 1-seed scouting runs Faris ran on this axis overnight (F-009 to F-011, "Run by" = faris). Scouting runs are for orientation only; Salah reruns them as S-* experiments. Class-incremental metrics from the shared evaluation script; task-incremental accuracy alongside.',
+         machinesNote: 'Read from Salah\'s latest results bundle.',
+         noMachine: 'No bundle from Salah yet. His machine appears here after his first pack_results.py zip is merged.',
+         flow: [
+           'Salah runs experiments from the shared repo (<code>git pull</code> first). Every run writes <code>runs/&lt;run_id&gt;/</code> on his machine.',
+           'Once a day, or whenever results change: <code>python scripts/pack_results.py --owner salah</code>, then send Faris the zip from <code>outbox/</code> (Drive <code>02_Experiments/Salah/</code> or directly).',
+           'Faris\'s AI merges it with <code>scripts/merge_results.py</code>, which runs the comparability checks, and uploads the rebuilt data here.',
+         ] },
+  };
+  const tpl = document.getElementById('person-results');
+  Object.keys(PEOPLE).forEach((p) => {
+    const host = document.getElementById('results-' + p);
+    if (host && tpl && !host.childElementCount) host.innerHTML = tpl.innerHTML.replace(/(data-draw|id|data-source)="P-/g, `$1="${p}-`).replace(/summary-P"/g, `summary-${p}"`);
+  });
+
+  dash.calc('summary', {
+    title: 'Board summary',
+    description: 'Counts of merged runs, verified objectives and check results, for both people.',
+    inputs: ['runs', 'objectives', 'checks'],
+    fn: (runs, objectives, checks) => [{
+      runs_total: runs.length,
+      axis_faris: runs.filter(PEOPLE.f.inAxis).length,
+      axis_salah: runs.filter(PEOPLE.s.inAxis).length,
+      ro_verified: objectives.filter((o) => o.status === 'verified').length,
+      ro_total: objectives.length,
+      tests_failed: d3.sum(checks, (c) => Number(c.failed)),
+    }],
+  });
+  Object.entries(PEOPLE).forEach(([p, P]) => dash.calc('summary-' + p, {
+    title: `${P.name}'s summary`,
+    description: `Runs on ${P.name}'s axis, his objectives, the shared checks and his machine's queue.`,
+    inputs: ['runs', 'objectives', 'checks', 'machines'],
+    fn: (runs, objectives, checks, machines) => {
+      const mine = runs.filter(P.inAxis);
+      const ros = objectives.filter((o) => P.ros.includes(o.ro));
+      const mach = machines.filter((m) => m.owner === P.key);
+      return [{
+        runs: mine.length,
+        runs_own: mine.filter((r) => r.owner === P.key).length,
+        runs_other: mine.filter((r) => r.owner !== P.key).length,
+        ro_verified: ros.filter((o) => o.status === 'verified').length,
+        ro_total: ros.length,
+        tests_passed: d3.sum(checks, (c) => Number(c.passed)),
+        tests_failed: d3.sum(checks, (c) => Number(c.failed)),
+        jobs_active: d3.sum(mach, (m) => Number(m.pending || 0) + Number(m.running || 0)),
+        has_machine: mach.length > 0,
+      }];
+    },
+  }));
+
+  const fieldOf = (source, field) => (el) => {
+    const s = dash.data(source);
     el.textContent = s.status === 'ok' && s.data[0] ? d3.format(',')(s.data[0][field]) : '—';
   };
   [['ro-verified', 'ro_verified'], ['ro-total', 'ro_total'], ['runs-total', 'runs_total'], ['tests-failed', 'tests_failed'],
-   ['t-runs', 'runs_total'], ['t-runs-f', 'runs_faris'], ['t-runs-s', 'runs_salah'], ['t-ro', 'ro_verified'],
-   ['t-tests', 'tests_passed'], ['t-tests-f', 'tests_failed'], ['t-queue', 'jobs_active']]
-    .forEach(([name, field]) => dash.draw(name, summaryField(field)));
+   ['pick-f', 'axis_faris'], ['pick-s', 'axis_salah']]
+    .forEach(([name, field]) => dash.draw(name, fieldOf('summary', field)));
 
-  dash.onData(() => {
-    const d = dash.data('runs');
-    const none = d.status === 'ok' && d.data.length === 0;
-    document.querySelectorAll('[data-empty="runs"]').forEach((p) => { p.hidden = !none; });
-  });
-
-  const pillClass = { verified: 'ok', pass: 'ok', running: 'warn', planned: 'muted', fail: 'bad', 'not built yet': 'muted', 'no tests': 'muted' };
-  function fillTable(tbody, rows, cols) {
+  const pillClass = { verified: 'ok', pass: 'ok', running: 'warn', exploring: 'warn', scouting: 'warn', planned: 'muted', fail: 'bad', 'not built yet': 'muted', 'no tests': 'muted' };
+  function fillTable(tbody, rows, cols, empty) {
     tbody.replaceChildren();
+    if (!rows.length && empty) {
+      const tr = document.createElement('tr'); const td = document.createElement('td');
+      td.colSpan = cols.length; td.className = 'pb-empty'; td.textContent = empty;
+      tr.append(td); tbody.append(tr);
+      return;
+    }
     rows.forEach((r) => {
       const tr = document.createElement('tr');
       cols.forEach(([key, kind, f]) => {
@@ -377,16 +444,59 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
     });
   }
 
-  dash.draw('objectives-body', (tb) => fillTable(tb, rowsOf('objectives'),
-    [['ro'], ['objective'], ['owner'], ['hypothesis'], ['status', 'pill'], ['evidence']]));
-  dash.draw('runs-body', (tb) => fillTable(tb, rowsOf('runs'),
-    [['run_id'], ['owner'], ['method'], ['dataset'], ['tau', 'num'], ['seed', 'num'], ['final_acc', 'num', pct],
-     ['forgetting', 'num', pct], ['learn_acc', 'num', pct], ['til_final_acc', 'num', pct], ['machine']]));
-  dash.draw('checks-body', (tb) => fillTable(tb, rowsOf('checks'),
-    [['suite'], ['passed', 'num'], ['failed', 'num'], ['skipped', 'num'], ['status', 'pill']]));
-  dash.draw('machines-body', (tb) => fillTable(tb, rowsOf('machines'),
-    [['owner'], ['machine'], ['pending', 'num'], ['running', 'num'], ['done', 'num'], ['failed', 'num'],
-     ['as_of']]));
+  Object.entries(PEOPLE).forEach(([p, P]) => {
+    const S = 'summary-' + p;
+    const sum = () => { const s = dash.data(S); return s.status === 'ok' ? s.data[0] : null; };
+    [['t-runs', 'runs'], ['t-ro', 'ro_verified'], ['t-ro-total', 'ro_total'], ['t-tests', 'tests_passed'], ['t-tests-f', 'tests_failed'], ['t-queue', 'jobs_active']]
+      .forEach(([name, field]) => dash.draw(`${p}-${name}`, fieldOf(S, field)));
+    dash.draw(`${p}-t-ro-list`, (el) => { el.textContent = P.ros.join(', '); });
+    dash.draw(`${p}-lede`, (el) => { el.innerHTML = `<b>${P.name}'s dashboard.</b> ${P.axis} RO1, the verified solver, is shared by both dashboards.`; });
+    dash.draw(`${p}-t-runs-sub`, (el) => {
+      const s = sum();
+      el.textContent = !s ? '—' : (p === 's' ? `${s.runs_own} from Salah · ${s.runs_other} scouting by Faris` : `${s.runs_own} from Faris's machine`);
+    });
+    dash.draw(`${p}-t-queue-sub`, (el) => {
+      const s = sum();
+      el.textContent = !s ? '—' : (s.has_machine ? `on ${P.name}'s machine` : `no bundle from ${P.name} yet`);
+    });
+    dash.draw(`${p}-objectives-body`, (tb) => fillTable(tb, rowsOf('objectives').filter((o) => P.ros.includes(o.ro)),
+      [['ro'], ['objective'], ['owner'], ['hypothesis'], ['status', 'pill'], ['evidence']]));
+    dash.draw(`${p}-runs-note`, (el) => { el.textContent = P.runsNote; });
+    dash.draw(`${p}-runs-body`, (tb) => fillTable(tb, rowsOf('runs').filter(P.inAxis),
+      [['run_id'], ['exp_id'], ['owner'], ['method'], ['dataset'], ['tau', 'num'], ['seed', 'num'], ['final_acc', 'num', pct],
+       ['forgetting', 'num', pct], ['learn_acc', 'num', pct], ['til_final_acc', 'num', pct]], 'No runs on this axis yet.'));
+    dash.draw(`${p}-checks-body`, (tb) => fillTable(tb, rowsOf('checks'),
+      [['suite'], ['passed', 'num'], ['failed', 'num'], ['skipped', 'num'], ['status', 'pill']]));
+    dash.draw(`${p}-machines-note`, (el) => { el.textContent = P.machinesNote; });
+    dash.draw(`${p}-machines-body`, (tb) => fillTable(tb, rowsOf('machines').filter((m) => m.owner === P.key),
+      [['owner'], ['machine'], ['pending', 'num'], ['running', 'num'], ['done', 'num'], ['failed', 'num'], ['as_of']], P.noMachine));
+    dash.draw(`${p}-flow`, (ol) => { ol.innerHTML = P.flow.map((t) => `<li>${t}</li>`).join(''); });
+    dash.draw(`${p}-pareto`, (box) => drawPareto(box, rowsOf('runs').filter(P.inAxis)));
+    dash.draw(`${p}-toy`, (box) => drawToy(box));
+  });
+
+  // ---------- view: whose dashboard × which tab (hash #faris, #salah, #faris-how, #salah-how) ----------
+  const view = { p: 'f', tab: 'results' };
+  const CHARTS = ['pareto', 'toy'];
+  const showView = (redraw = true) => {
+    const panel = view.tab === 'how' ? 'how' : 'results-' + view.p;
+    document.querySelectorAll('[data-panel]').forEach((el) => { el.hidden = el.dataset.panel !== panel; });
+    document.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === view.tab)));
+    document.querySelectorAll('[data-person]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.person === view.p)));
+    document.querySelectorAll('.pb-ros .ro').forEach((el) => el.classList.toggle('mine', PEOPLE[view.p].ros.includes(el.dataset.ro) && el.dataset.ro !== 'RO1'));
+    if (!redraw) return;
+    if (view.tab === 'results') CHARTS.forEach((c) => dash.draw(`${view.p}-${c}`));  // size charts to the now-visible panel
+    else ['gd', 'forget', 'geom'].forEach((n) => dash.draw(n));
+  };
+  const link = () => dash.setLink(PEOPLE[view.p].key + (view.tab === 'how' ? '-how' : ''));
+  document.querySelectorAll('[data-person]').forEach((b) => b.addEventListener('click', () => { view.p = b.dataset.person; showView(); link(); }));
+  document.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => { view.tab = b.dataset.tab; showView(); link(); }));
+  {
+    const [who, tab] = location.hash.slice(1).split('-');
+    if (who === 'salah') view.p = 's';
+    if (tab === 'how' || who === 'how') view.tab = 'how';
+    showView(false);  // the first draw happens when data arrives
+  }
 
   function tooltip(box) {
     let tip = box.querySelector('.pb-tip');
@@ -404,11 +514,11 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
     g.selectAll('path,line').attr('stroke', 'var(--cds-chart-axis)');
   }
 
-  dash.draw('pareto', (box) => {
+  function drawPareto(box, runs) {
     box.replaceChildren();
-    const rows = rowsOf('runs').filter((r) => r.final_acc !== '' && r.forgetting !== '')
+    const rows = runs.filter((r) => r.final_acc !== '' && r.forgetting !== '')
       .map((r) => ({ ...r, x: Number(r.forgetting), y: Number(r.final_acc) }));
-    if (!rows.length) { box.textContent = '—'; return; }
+    if (!rows.length) { box.textContent = 'No runs on this axis yet. Points appear once runs are merged.'; return; }
     const W = Math.max(280, box.clientWidth), H = 260, m = { t: 10, r: 16, b: 40, l: 48 };
     const methods = [...new Set(rows.map((r) => r.method))];
     const color = (k) => dash.colors[methods.indexOf(k) % dash.colors.length];
@@ -437,16 +547,7 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
       g.append('text').attr('x', -12).attr('y', 4).attr('text-anchor', 'end').attr('fill', 'var(--color-fg-muted)').style('font-size', 'var(--cds-font-size-caption)').text(k);
       g.append('circle').attr('r', 4).attr('fill', color(k));
     });
-  });
-
-  // ---------- tabs ----------
-  const showTab = (name) => {
-    document.querySelectorAll('[data-panel]').forEach((p) => { p.hidden = p.dataset.panel !== name; });
-    document.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
-  };
-  document.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => { showTab(b.dataset.tab); dash.setLink(b.dataset.tab); }));
-  const startTab = location.hash.slice(1);
-  if (startTab === 'how' || startTab === 'results') showTab(startTab);
+  }
 
   // ---------- explainer drawings (geometry from formulas, no data) ----------
   const mutedLine = 'var(--cds-chart-grid)';
@@ -573,7 +674,7 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
     label(p, s.d[0] + 0.05, s.d[1] - 0.06, 'd̃  PCD step', dash.colors[0]);
   });
 
-  dash.draw('toy', (box) => {
+  function drawToy(box) {
     box.replaceChildren();
     const toy = rowsOf('toy').map((r) => ({ tau: Number(r.tau), p: Number(r.primary_progress), s: Number(r.secondary_progress) }));
     const th = rowsOf('threshold')[0]?.threshold;
@@ -612,7 +713,7 @@ body { margin:0; background:var(--color-bg); color:var(--color-fg); font-family:
         const [bx, by] = d3.pointer(ev, box); placeTip(box, tip, bx, by);
       })
       .on('pointerleave', () => { tip.hidden = true; });
-  });
+  }
 </script>
 
 </div></body></html>
