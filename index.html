@@ -355,7 +355,7 @@
       <div><dt>Runs</dt><dd>44 arms &times; 9 runs = 396 final test-split runs, all finished. Each arm: seeds 0, 1, 2 crossed with three fixed class orders.</dd></div>
       <div><dt>Memory</dt><dd>500 stored examples on Split MNIST; 500 and 2000 on Split CIFAR-100 (5 and 20 images per class). GEM and PCD keep the same class-balanced memory; ER keeps a reservoir sample of the same size.</dd></div>
       <div><dt>Tuning</dt><dd>Ten percent of the training data held out as a validation split. Learning rate, GEM's memory strength, PCD's margin and EWC's weight were all chosen there. Several picks sit at a grid edge, so the paper writes "tuned on the same grid", never "fully tuned".</dd></div>
-      <div><dt>Post hoc</dt><dd>301 further test runs finished in a first post hoc round (5 diverged, all of them EWC at its largest strength), and a second round followed. They are labelled as post hoc wherever they appear and change no verdict.</dd></div>
+      <div><dt>Post hoc</dt><dd>301 further test runs finished in a first post hoc round (5 diverged, all of them EWC at its largest strength) and 276 in a second, 87 of them on a second machine. They are labelled as post hoc wherever they appear and change no verdict.</dd></div>
     </dl>
   </div>
 </section>
