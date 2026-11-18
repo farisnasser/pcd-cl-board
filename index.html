@@ -164,7 +164,7 @@
             <li><span class="lab">Experience Replay (ER)</span>Trains, at every step, on the current minibatch together with a minibatch drawn from a small memory of stored examples.</li>
             <li><span class="lab">Elastic Weight Consolidation (EWC)</span>Adds a penalty for moving parameters that mattered for old tasks, with one hand-tuned weight <span class="v">λ</span>.</li>
             <li class="hot"><span class="lab">Gradient Episodic Memory (GEM)</span>Takes the direction closest to the new task's gradient that satisfies <span class="v">g<sub>j</sub><sup>⊤</sup>d ≥ 0</span> for every old task: one wall through the origin per task. Its released code adds a memory strength <span class="v">γ ≥ 0</span> that pushes the step further into the allowed region.</li>
-            <li class="hot"><span class="lab">A-GEM and ε-SOFT-GEM</span>A-GEM uses one wall on an aggregate memory gradient. ε-SOFT-GEM gives that wall a positive margin on unit-normalized gradients.</li>
+            <li class="hot"><span class="lab">A-GEM and <span style="text-transform:none">ε</span>-SOFT-GEM</span>A-GEM uses one wall on an aggregate memory gradient. ε-SOFT-GEM gives that wall a positive margin on unit-normalized gradients.</li>
           </ol>
         </div>
       </div>
@@ -452,31 +452,31 @@
     <div class="pair">
       <div class="stack">
         <figure class="chart posthoc dense rise" id="chartSweep" role="group" aria-label="Post hoc: final accuracy on Split MNIST against the number of stored examples"></figure>
+        <article class="card posthoc rise">
+          <div class="no">Post hoc 01</div>
+          <h3>With little memory, a margin matters. PCD's and GEM's do the same job.</h3>
+          <p>On Split MNIST with 100 stored examples and every method retuned at that size, ER ends at <span class="num">74.1 ± 1.1</span>, GEM at <span class="num">82.3 ± 0.9</span> and PCD at <span class="num">82.7 ± 0.9</span>. PCD minus ER is <span class="num">+8.6 ± 1.6</span> (9/9). PCD minus GEM is <span class="num">+0.4 ± 0.3</span> (8/9): it passes the rule, but it is under half a point and GEM's pick is at the edge of its grid, so the two are read as level.</p>
+          <p>What both need is a margin: PCD's is worth <span class="num">+4.6 ± 1.1</span> at the tuned setting, and GEM's pick moved to a memory strength of 4.</p>
+        </article>
       </div>
       <div class="stack">
         <figure class="chart posthoc rise" id="chartScale" role="group" aria-label="Post hoc: task-incremental accuracy of PCD-EWC across penalty scales for two values of epsilon"></figure>
-      <article class="card posthoc rise">
-        <div class="no">Post hoc 02</div>
-        <h3>Scale invariance holds once ε is small</h3>
-        <p>At one fixed setting, PCD-EWC's task-incremental accuracy spans <span class="num">2.46</span> points across the five penalty scales with the default constant and <span class="num">0.13</span> points with <span class="v">ε = 10⁻¹⁶</span>. EWC at one learning rate spans <span class="num">3.5</span> points across four values of its strength, and at the largest only 4 of nine runs finish.</p>
-        <p>The mechanism behind H2 works at this setting; the default constant hid it at small penalties. This does not change the verdict on H2.</p>
-      </article>
-      <article class="card posthoc rise">
-        <div class="no">Post hoc 03</div>
-        <h3>The lead over EWC survives a wider grid</h3>
-        <p>EWC's frozen pick was the largest strength that stayed stable in its grid. Retuned on a wider grid at <span class="v">c = 1</span>, EWC's pick moves, and PCD-EWC stays <span class="num">+1.20 ± 0.69</span> ahead (9/9).</p>
-        <p>Only the baseline's grid was widened, so this check could only shrink the lead.</p>
-      </article>
+        <article class="card posthoc rise">
+          <div class="no">Post hoc 02</div>
+          <h3>Scale invariance holds once ε is small</h3>
+          <p>At one fixed setting, PCD-EWC's task-incremental accuracy spans <span class="num">2.46</span> points across the five penalty scales with the default constant and <span class="num">0.13</span> points with <span class="v">ε = 10⁻¹⁶</span>. EWC at one learning rate spans <span class="num">3.5</span> points across four values of its strength, and at the largest only 4 of nine runs finish.</p>
+          <p>The mechanism behind H2 works at this setting; the default constant hid it at small penalties. This does not change the verdict on H2.</p>
+        </article>
+        <article class="card posthoc rise">
+          <div class="no">Post hoc 03</div>
+          <h3>The lead over EWC survives a wider grid</h3>
+          <p>EWC's frozen pick was the largest strength that stayed stable in its grid. Retuned on a wider grid at <span class="v">c = 1</span>, EWC's pick moves, and PCD-EWC stays <span class="num">+1.20 ± 0.69</span> ahead (9/9).</p>
+          <p>Only the baseline's grid was widened, so this check could only shrink the lead.</p>
+        </article>
       </div>
     </div>
 
-    <div class="cards two">
-      <article class="card posthoc rise">
-        <div class="no">Post hoc 01</div>
-        <h3>With little memory, a margin matters. PCD's and GEM's do the same job.</h3>
-        <p>On Split MNIST with 100 stored examples and every method retuned at that size, ER ends at <span class="num">74.1 ± 1.1</span>, GEM at <span class="num">82.3 ± 0.9</span> and PCD at <span class="num">82.7 ± 0.9</span>. PCD minus ER is <span class="num">+8.6 ± 1.6</span> (9/9). PCD minus GEM is <span class="num">+0.4 ± 0.3</span> (8/9): it passes the rule, but it is under half a point and GEM's pick is at the edge of its grid, so the two are read as level.</p>
-        <p>What both need is a margin: PCD's is worth <span class="num">+4.6 ± 1.1</span> at the tuned setting, and GEM's pick moved to a memory strength of 4.</p>
-      </article>
+    <div class="cards three">
       <article class="card posthoc rise">
         <div class="no">Post hoc 04 &middot; RQ4</div>
         <h3>Restarting the normalizer buys no final accuracy</h3>
