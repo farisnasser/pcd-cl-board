@@ -1,7 +1,5 @@
-# PCD-CL Results Board
+# PCD-CL project page
 
-Static snapshot of the results board for the MLR570 (AUS) project *Priority-Constrained Descent for Continual Learning* (Faris Nasser, Salah Moussa).
+Public project page for "Priority-Constrained Descent for Continual Learning: A Controlled Study of Margins, Primaries and Priorities" (Faris Nasser and Salah Moussa, MLR570, American University of Sharjah, Fall 2026).
 
-Live: https://farisnasser.github.io/pcd-cl-board/
-
-All numbers are **exploration-stage** (protocol v0, validation split, untuned lr) unless a row says otherwise. They are not reportable results. The page is generated from the project repo by `scripts/build_site.py`; do not edit it here.
+The page is fully static: `index.html`, `css/style.css`, `js/` (charts are drawn from `js/data.js`, which is generated from the paper's result files) and `assets/` (the paper PDF and the video). The earlier results board is kept in `archive/board.html`.
