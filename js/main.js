@@ -158,7 +158,7 @@
         val: r.diff.label + '<small>' + r.diff.sign + ' pairs agree</small>' + read(r.diff.supported)
       }));
     });
-    fig.appendChild(axis(sc, [90, 92, 94, 96, 98, 100], 'difference'));
+    fig.appendChild(axis(sc, [90, 92, 94, 96, 98, 100], '%'));
     fig.appendChild(legend(['<span class="mk circle teal fill"></span>PCD-EWC', '<span class="mk grey fill"></span>EWC', '<span class="span"></span>± 1 std over runs']));
     fig.appendChild(h('p', 'chart-foot', 'Right column: PCD-EWC minus EWC, paired. Averaged over the five scales within each run: <span class="num">' +
       D.rq2avg.label + '</span> (' + D.rq2avg.sign + ' pairs), ' + (D.rq2avg.supported ? 'supported' : 'not separated') + '.'));
@@ -174,30 +174,23 @@
   function sweep() {
     var fig = document.getElementById('chartSweep');
     if (!fig || !D.sweep) return;
-    fig.style.setProperty('--valcol', '150px');
-    fig.style.setProperty('--namecol', '26%');
-    head(fig, 'Memory size on Split MNIST', 'final accuracy, class-incremental (%) · mean over nine runs', 'Post hoc');
+    fig.style.setProperty('--valcol', '92px');
+    fig.style.setProperty('--namecol', '38%');
+    head(fig, 'Memory size on Split MNIST', 'final accuracy, class-incremental (%) · mean ± std over nine runs', 'Post hoc');
     var sc = scale(68, 94);
-    fig.appendChild(h('p', 'chart-group', 'Settings tuned at 500 stored examples, carried over'));
+    var NAME = { er: 'ER', gem: 'GEM', pcd0: 'PCD, τ = 0', 'pcd0.75': 'PCD, τ = 0.75', pcd: 'PCD, τ = 0.25' };
+    function one(key, p) {
+      fig.appendChild(row({ name: NAME[key], marks: [span(sc, p.mean - p.std, p.mean + p.std), at(SERIES[key].cls, sc(p.mean))], val: p.label }));
+    }
+    fig.appendChild(h('p', 'chart-group', '100 stored examples, every method retuned'));
+    D.sweep.tuned.forEach(function (t) { one(t.key, t); });
     D.sweep.M.forEach(function (M, i) {
-      var marks = [], lines = [];
-      D.sweep.series.forEach(function (s) {
-        var p = s.points[i];
-        marks.push(at(SERIES[s.key].cls, sc(p.mean)));
-        lines.push(SERIES[s.key].short + ' ' + p.label);
-      });
-      fig.appendChild(row({ name: M + ' stored', sub: M === '500' ? 'the frozen final runs' : '', marks: marks, val: '<small>' + lines.join('<br>') + '</small>' }));
+      fig.appendChild(h('p', 'chart-group', M + ' stored examples, ' + (M === '500' ? 'the frozen final runs' : 'settings carried over from 500')));
+      D.sweep.series.forEach(function (s) { one(s.key, s.points[i]); });
     });
-    fig.appendChild(h('p', 'chart-group', 'Every method retuned at 100 stored examples'));
-    var marks = [], lines = [];
-    D.sweep.tuned.forEach(function (t) {
-      marks.push(at(SERIES[t.key].cls, sc(t.mean)));
-      lines.push(SERIES[t.key].short + ' ' + t.label);
-    });
-    fig.appendChild(row({ name: '100 stored', sub: 'retuned', marks: marks, val: '<small>' + lines.join('<br>') + '</small>' }));
     fig.appendChild(axis(sc, [70, 75, 80, 85, 90], '%'));
-    fig.appendChild(legend([SERIES['pcd0.75'].leg, SERIES.pcd0.leg, SERIES.gem.leg, SERIES.er.leg]));
-    fig.appendChild(h('p', 'chart-foot', 'The margin is τ = 0.75 in the carried-over rows and τ = 0.25 in the retuned row. Paired, retuned: PCD minus ER <span class="num">' +
+    fig.appendChild(legend([SERIES['pcd0.75'].leg, SERIES.pcd0.leg, SERIES.gem.leg, SERIES.er.leg, '<span class="span"></span>± 1 std']));
+    fig.appendChild(h('p', 'chart-foot', 'Paired differences at 100 stored examples, retuned: PCD minus ER <span class="num">' +
       D.low['low/pcd-er'].final_acc.label + '</span>, PCD minus GEM <span class="num">' + D.low['low/pcd-gem'].final_acc.label +
       '</span>, margin against none <span class="num">' + D.low['low/margin'].final_acc.label + '</span>.'));
   }
@@ -206,18 +199,18 @@
     var fig = document.getElementById('chartScale');
     if (!fig || !D.scale) return;
     fig.style.setProperty('--valcol', '150px');
-    fig.style.setProperty('--namecol', '26%');
+    fig.style.setProperty('--namecol', '22%');
     head(fig, 'Scale invariance, tested directly', 'PCD-EWC at one fixed setting · final accuracy, task-incremental (%)', 'Post hoc');
     var sc = scale(93, 100), sup = { '0.01': '10⁻²', '0.1': '10⁻¹', '1': '1', '10': '10', '100': '10²' };
     D.scale.c.forEach(function (c, i) {
       var a = D.scale.series[0].points[i], b = D.scale.series[1].points[i], marks = [];
       marks.push(span(sc, a.mean - a.std, a.mean + a.std, 'var(--c-base)'));
       marks.push(span(sc, b.mean - b.std, b.mean + b.std, 'var(--c-posthoc)'));
-      marks.push(at('mk grey', sc(a.mean)));
       marks.push(at('mk circle violet fill', sc(b.mean)));
+      marks.push(at('mk grey open', sc(a.mean)));
       fig.appendChild(row({ name: 'c = ' + sup[c], marks: marks, val: '<small>default ' + a.label + '<br>small ' + b.label + '</small>' }));
     });
-    fig.appendChild(axis(sc, [93, 94, 95, 96, 97, 98, 99, 100], '%'));
+    fig.appendChild(axis(sc, [94, 96, 98, 100], '%'));
     fig.appendChild(legend(['<span class="mk grey"></span>ε = 10⁻⁸, the default', '<span class="mk circle violet fill"></span>ε = 10⁻¹⁶', '<span class="span"></span>± 1 std over runs']));
     fig.appendChild(h('p', 'chart-foot', 'The penalty is multiplied by c. With the default constant the result depends on c; with a small constant it does not.'));
   }
@@ -264,6 +257,7 @@
     window.addEventListener('beforeprint', showAll);
     if (location.search.indexOf('static') !== -1) showAll();
   }
+  window.PCDCL_READY = true;
   var heroPath = document.getElementById('heroPath');
   if (heroPath) heroPath.classList.add('go');
 

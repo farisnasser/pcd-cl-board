@@ -19,7 +19,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B6E6E'/%3E%3Cpath d='M8 23 L24 9' stroke='white' stroke-width='2.4' stroke-dasharray='3 3' fill='none'/%3E%3Cpath d='M9 11 L20 22' stroke='white' stroke-width='3' fill='none' stroke-linecap='square'/%3E%3C/svg%3E" />
 <link rel="stylesheet" href="css/style.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-<script>document.documentElement.classList.add('js');</script>
+<script>document.documentElement.classList.add('js');setTimeout(function(){if(!window.PCDCL_READY)document.documentElement.classList.remove('js');},3500);</script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 </head>
@@ -180,13 +180,13 @@
     <div class="split">
       <div class="split-text">
         <p class="rise"><a href="https://daravaram.github.io/PCD/" target="_blank" rel="noopener">Priority-Constrained Descent</a> (Varam and AlHajri, 2026) is an optimizer for problems in which one objective is the main one and the others are conditions. It has one primary gradient <span class="v">g<sub>0</sub></span> and <span class="v">k</span> secondary gradients <span class="v">g<sub>1</sub>, …, g<sub>k</sub></span>. It first brings every gradient to a comparable length, written <span class="v">g̃<sub>i</sub></span>, and then solves a small quadratic program:</p>
-        <div class="math rise">\[ \tilde d^{\,*}\;=\;\arg\min_{\tilde d\in\mathbb{R}^p}\ \tfrac12\lVert \tilde d-\tilde g_0\rVert^2 \quad\text{s.t.}\quad \tilde g_j^{\top}\tilde d\;\ge\;\tau_j\,\lVert \tilde g_j\rVert^2,\qquad j=1,\dots,k . \]</div>
+        <div class="math rise">\[ \begin{aligned} \tilde d^{\,*}\;=\;\;&\arg\min_{\tilde d\in\mathbb{R}^p}\ \tfrac12\lVert \tilde d-\tilde g_0\rVert^2 \\ &\text{s.t.}\quad \tilde g_j^{\top}\tilde d\;\ge\;\tau_j\,\lVert \tilde g_j\rVert^2,\qquad j=1,\dots,k . \end{aligned} \]</div>
         <p class="rise">The objective keeps the direction as close as possible to the primary's. Each constraint says: give secondary <span class="v">j</span> at least a fraction <span class="v">τ<sub>j</sub> ∈ [0, 1]</span> of the first-order progress it would make by following its own gradient. With <span class="v">τ<sub>j</sub> = 0</span> it reads "do not hurt <span class="v">j</span>", which on raw gradients is exactly GEM's wall. A positive margin moves the wall away from the origin and asks the secondary to improve.</p>
         <p class="rise">With one secondary the solution has a closed form:</p>
         <div class="math rise">\[ \tilde d=\tilde g_0+\lambda\,\tilde g_1, \qquad \lambda=\max\!\big(0,\;\tau-\tilde g_1^{\top}\tilde g_0/\lVert \tilde g_1\rVert^2\big). \]</div>
         <p class="rise">If the primary already gives the secondary its share, <span class="v">λ = 0</span> and PCD does not bend the step at all. Otherwise it adds just enough of <span class="v">g̃<sub>1</sub></span> to land on the wall. The primary pays for this in its own first-order progress, so the margin is an explicit stability&ndash;plasticity dial.</p>
         <p class="rise"><strong>Why <span class="v">τ</span> means the same for every loss.</strong> If one loss is 100 times larger than another, so is its gradient. PCD therefore divides every gradient by a running estimate of its typical length:</p>
-        <div class="math rise">\[ v_{i,s}=\beta\,v_{i,s-1}+(1-\beta)\,\lVert g_{i,s}\rVert^2,\qquad \hat v_{i,s}=\frac{v_{i,s}}{1-\beta^{s}},\qquad \tilde g_{i,s}=\frac{g_{i,s}}{\sqrt{\hat v_{i,s}+\varepsilon}} . \]</div>
+        <div class="math rise">\[ \begin{gathered} v_{i,s}=\beta\,v_{i,s-1}+(1-\beta)\,\lVert g_{i,s}\rVert^2, \\ \hat v_{i,s}=\frac{v_{i,s}}{1-\beta^{s}},\qquad \tilde g_{i,s}=\frac{g_{i,s}}{\sqrt{\hat v_{i,s}+\varepsilon}} . \end{gathered} \]</div>
         <p class="rise">Multiply a loss by any <span class="v">c &gt; 0</span> and its normalized gradient is unchanged, as long as <span class="v">c²v̂ ≫ ε</span>. That condition matters later: it fails for tiny gradients, where <span class="v">ε</span> dominates.</p>
         <p class="rise">The step keeps the primary's raw length, <span class="v">d = d̃ ‖g<sub>0</sub>‖ / ‖d̃‖</span>, and is taken with plain SGD. Rescaling keeps the sign of every dot product but not the exact margin.</p>
       </div>
@@ -275,7 +275,7 @@
         <div class="no">Regularization</div>
         <h3>Walls from EWC penalties: PCD-EWC</h3>
         <p>No example is stored. EWC merges all past tasks into one penalty with one weight. PCD-EWC keeps one penalty per past task, and the gradient of each is a wall:</p>
-        <div class="math">\[ \Omega_j(\theta)=\tfrac{c}{2}\sum_{m} F_{j,m}\,(\theta_m-\theta^*_{j,m})^2,\qquad g_j=c\,F_j\odot(\theta-\theta^*_j). \]</div>
+        <div class="math">\[ \begin{gathered} \Omega_j(\theta)=\tfrac{c}{2}\sum_{m} F_{j,m}\,(\theta_m-\theta^*_{j,m})^2, \\ g_j=\nabla\Omega_j(\theta)=c\,F_j\odot(\theta-\theta^*_j). \end{gathered} \]</div>
         <p>The penalty scale <span class="v">c</span> stands for something not known in advance. For EWC the best weight moves with <span class="v">c</span>; in PCD-EWC the normalization should absorb it.</p>
       </article>
       <article class="card rise">
@@ -338,7 +338,10 @@
     <div class="rule-plate rise">
       <h3>The reading rule</h3>
       <p>Every comparison is paired: the two arms run with the same seed and the same class order, which gives nine differences. A difference is <strong>supported</strong> only if both conditions hold. Otherwise it is reported as <strong>not separated</strong>, whatever its mean.</p>
-      <div class="math">\[ \lvert\,\text{mean of the 9 differences}\,\rvert \;>\; \text{their sample standard deviation} \qquad\text{and}\qquad \text{at least 7 of 9 share the sign of the mean} \]</div>
+      <ol class="conds">
+        <li><b>Size.</b> The mean of the nine differences is larger in size than one sample standard deviation of those differences.</li>
+        <li><b>Sign.</b> At least seven of the nine differences have the sign of the mean.</li>
+      </ol>
       <ul class="rule-legend">
         <li><span class="read yes">supported</span> passes both conditions</li>
         <li><span class="read no">not separated</span> fails at least one</li>
@@ -370,6 +373,7 @@
       <div class="rise"><div class="big">+1.7 <small>± 0.9</small></div><span class="read yes">supported</span><p><b>No memory, task-incremental.</b> PCD-EWC minus EWC, averaged over five penalty scales. The one consistent gain of the registered runs, on the easiest benchmark, and not for the reason hypothesized.</p></div>
     </div>
 
+    <noscript><p class="cap">The charts on this page are drawn by a script. Every number they show is also in the text and in the paper.</p></noscript>
     <h3 class="rise" style="font-size:34px">Where each method ends</h3>
     <div class="ladders rise" id="chartLadder" role="group" aria-label="Final class-incremental accuracy of each method on three settings"></div>
     <p class="cap rise">Class-incremental final accuracy <span class="v">A<sub>T</sub></span>, in percent: mean ± standard deviation over nine runs; small dots are single runs. Fine-tuning is the floor and joint training the ceiling. ER's memory has the same size as PCD's and GEM's but not the same contents.</p>
@@ -446,17 +450,11 @@
     </div>
 
     <div class="pair">
-      <figure class="chart posthoc rise" id="chartSweep" role="group" aria-label="Post hoc: final accuracy on Split MNIST against the number of stored examples"></figure>
-      <figure class="chart posthoc rise" id="chartScale" role="group" aria-label="Post hoc: task-incremental accuracy of PCD-EWC across penalty scales for two values of epsilon"></figure>
-    </div>
-
-    <div class="cards three">
-      <article class="card posthoc rise">
-        <div class="no">Post hoc 01</div>
-        <h3>With little memory, a margin matters. PCD's and GEM's do the same job.</h3>
-        <p>On Split MNIST with 100 stored examples and every method retuned at that size, ER ends at <span class="num">74.1 ± 1.1</span>, GEM at <span class="num">82.3 ± 0.9</span> and PCD at <span class="num">82.7 ± 0.9</span>. PCD minus ER is <span class="num">+8.6 ± 1.6</span> (9/9). PCD minus GEM is <span class="num">+0.4 ± 0.3</span> (8/9): it passes the rule, but it is under half a point and GEM's pick is at the edge of its grid, so the two are read as level.</p>
-        <p>What both need is a margin: PCD's is worth <span class="num">+4.6 ± 1.1</span> at the tuned setting, and GEM's pick moved to a memory strength of 4.</p>
-      </article>
+      <div class="stack">
+        <figure class="chart posthoc dense rise" id="chartSweep" role="group" aria-label="Post hoc: final accuracy on Split MNIST against the number of stored examples"></figure>
+      </div>
+      <div class="stack">
+        <figure class="chart posthoc rise" id="chartScale" role="group" aria-label="Post hoc: task-incremental accuracy of PCD-EWC across penalty scales for two values of epsilon"></figure>
       <article class="card posthoc rise">
         <div class="no">Post hoc 02</div>
         <h3>Scale invariance holds once ε is small</h3>
@@ -468,6 +466,16 @@
         <h3>The lead over EWC survives a wider grid</h3>
         <p>EWC's frozen pick was the largest strength that stayed stable in its grid. Retuned on a wider grid at <span class="v">c = 1</span>, EWC's pick moves, and PCD-EWC stays <span class="num">+1.20 ± 0.69</span> ahead (9/9).</p>
         <p>Only the baseline's grid was widened, so this check could only shrink the lead.</p>
+      </article>
+      </div>
+    </div>
+
+    <div class="cards two">
+      <article class="card posthoc rise">
+        <div class="no">Post hoc 01</div>
+        <h3>With little memory, a margin matters. PCD's and GEM's do the same job.</h3>
+        <p>On Split MNIST with 100 stored examples and every method retuned at that size, ER ends at <span class="num">74.1 ± 1.1</span>, GEM at <span class="num">82.3 ± 0.9</span> and PCD at <span class="num">82.7 ± 0.9</span>. PCD minus ER is <span class="num">+8.6 ± 1.6</span> (9/9). PCD minus GEM is <span class="num">+0.4 ± 0.3</span> (8/9): it passes the rule, but it is under half a point and GEM's pick is at the edge of its grid, so the two are read as level.</p>
+        <p>What both need is a margin: PCD's is worth <span class="num">+4.6 ± 1.1</span> at the tuned setting, and GEM's pick moved to a memory strength of 4.</p>
       </article>
       <article class="card posthoc rise">
         <div class="no">Post hoc 04 &middot; RQ4</div>
