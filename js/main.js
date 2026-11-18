@@ -115,31 +115,55 @@
       '</span> at τ = 0, <span class="num">' + e.replay_tau075.final_acc.label + '</span> at τ = 0.75.'));
   }
 
-  function forest(id, rows, metric, opts) {
+  function forest(id, rows, opts) {
     var fig = document.getElementById(id);
     if (!fig || !rows) return;
-    fig.style.setProperty('--namecol', '31%');
+    var metric = opts.metric;
+    fig.style.setProperty('--namecol', '35%');
     fig.style.setProperty('--valcol', '118px');
-    head(fig, opts.title, opts.sub);
-    var sc = scale(opts.min, opts.max), last = '';
-    rows.forEach(function (r) {
-      if (r.group !== last) { fig.appendChild(h('p', 'chart-group', esc(r.group))); last = r.group; }
-      var m = r[metric], marks = [];
-      marks.push(at('zero', sc(0)));
-      marks.push(span(sc, m.mean - m.std, m.mean + m.std));
-      m.diffs.forEach(function (v) { if (v >= opts.min && v <= opts.max) marks.push(at('pt', sc(v))); });
-      marks.push(at('mk circle' + (m.supported ? ' fill' : ''), sc(m.mean)));
-      fig.appendChild(row({ name: esc(r.name), marks: marks,
-        val: m.label + '<small>' + m.sign + ' pairs agree</small>' + read(m.supported) }));
-    });
-    fig.appendChild(axis(sc, opts.ticks, 'points', signed));
-    fig.appendChild(legend([
-      '<span class="mk circle fill"></span>supported',
-      '<span class="mk circle"></span>not separated',
-      '<span class="pt"></span>one of the 9 pairs',
-      '<span class="span"></span>± 1 paired std'
-    ]));
-    if (opts.foot) fig.appendChild(h('p', 'chart-foot', opts.foot));
+
+    function render(refocus) {
+      var m = opts.metrics[metric];
+      fig.innerHTML = '';
+      head(fig, opts.title, m.sub);
+
+      var seg = h('div', 'seg');
+      seg.setAttribute('role', 'group');
+      seg.setAttribute('aria-label', 'Metric shown in this chart');
+      Object.keys(opts.metrics).forEach(function (k) {
+        var b = h('button', '', opts.metrics[k].name);
+        b.type = 'button';
+        b.setAttribute('aria-pressed', k === metric ? 'true' : 'false');
+        b.addEventListener('click', function () { if (k !== metric) { metric = k; render(true); } });
+        seg.appendChild(b);
+      });
+      fig.appendChild(seg);
+
+      var sc = scale(m.min, m.max), last = '';
+      rows.forEach(function (r) {
+        if (r.group !== last) { fig.appendChild(h('p', 'chart-group', esc(r.group))); last = r.group; }
+        var d = r[metric], marks = [];
+        marks.push(at('zero', sc(0)));
+        marks.push(span(sc, d.mean - d.std, d.mean + d.std));
+        d.diffs.forEach(function (v) { if (v >= m.min && v <= m.max) marks.push(at('pt', sc(v))); });
+        marks.push(at('mk circle' + (d.supported ? ' fill' : ''), sc(d.mean)));
+        fig.appendChild(row({ name: esc(r.name), marks: marks,
+          val: d.label + '<small>' + d.sign + ' pairs agree</small>' + read(d.supported) }));
+      });
+      fig.appendChild(axis(sc, m.ticks, 'points', signed));
+      fig.appendChild(legend([
+        '<span class="mk circle fill"></span>supported',
+        '<span class="mk circle"></span>not separated',
+        '<span class="pt"></span>one of the 9 pairs',
+        '<span class="span"></span>± 1 paired std'
+      ]));
+      if (m.foot) fig.appendChild(h('p', 'chart-foot', m.foot));
+      if (refocus) {
+        var on = seg.querySelector('[aria-pressed="true"]');
+        if (on) on.focus();
+      }
+    }
+    render(false);
   }
 
   function rq2() {
@@ -219,14 +243,29 @@
 
   ladder();
   substitutes();
-  forest('chartRq1', D.rq1, 'final_acc', {
-    title: 'What each change is worth', sub: 'paired difference in final accuracy, class-incremental (points) · first minus second',
-    min: -9, max: 11, ticks: [-8, -4, 0, 4, 8]
+  var WIDE = { min: -12, max: 12, ticks: [-10, -5, 0, 5, 10] };
+  forest('chartRq1', D.rq1, {
+    title: 'What each change is worth', metric: 'final_acc',
+    metrics: {
+      final_acc: { name: 'Final accuracy', min: -9, max: 11, ticks: [-8, -4, 0, 4, 8],
+        sub: 'paired difference in final accuracy, class-incremental (points) · first minus second · above zero is better' },
+      forgetting: { name: 'Forgetting', min: WIDE.min, max: WIDE.max, ticks: WIDE.ticks,
+        sub: 'paired difference in forgetting (points) · first minus second · below zero means less forgetting' },
+      learn_acc: { name: 'Learning accuracy', min: WIDE.min, max: WIDE.max, ticks: WIDE.ticks,
+        sub: 'paired difference in learning accuracy (points) · first minus second · above zero is better' }
+    }
   });
-  forest('chartRq3', D.rq3, 'forgetting', {
-    title: 'Priority rules against a shared margin', sub: 'paired difference in forgetting (points) · below zero means less forgetting',
-    min: -3, max: 3, ticks: [-3, -2, -1, 0, 1, 2, 3],
-    foot: 'The one supported row is the shrinking schedule on Split MNIST, and it is an increase in forgetting.'
+  forest('chartRq3', D.rq3, {
+    title: 'Priority rules against a shared margin', metric: 'forgetting',
+    metrics: {
+      forgetting: { name: 'Forgetting', min: -3, max: 3, ticks: [-3, -2, -1, 0, 1, 2, 3],
+        sub: 'paired difference in forgetting (points) · below zero means less forgetting',
+        foot: 'The one supported row is the shrinking schedule on Split MNIST, and it is an increase in forgetting.' },
+      final_acc: { name: 'Final accuracy', min: -3, max: 4, ticks: [-3, -2, -1, 0, 1, 2, 3, 4],
+        sub: 'paired difference in final accuracy, class-incremental (points) · above zero is better' },
+      learn_acc: { name: 'Learning accuracy', min: -3, max: 3, ticks: [-3, -2, -1, 0, 1, 2, 3],
+        sub: 'paired difference in learning accuracy (points) · above zero is better' }
+    }
   });
   rq2();
   sweep();

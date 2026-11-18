@@ -396,7 +396,7 @@
       <div class="finding-text rise">
         <span class="q">RQ1 &middot; Split CIFAR-100</span>
         <h3>Level with replay. A margin costs accuracy.</h3>
-        <p>With 500 stored examples, PCD minus ER is <span class="num">+0.4 ± 1.5</span> in final accuracy (6/9), with <span class="num">−5.6 ± 2.1</span> in forgetting and <span class="num">−5.3 ± 2.6</span> in learning accuracy: PCD forgets less and learns each new task less well, by about the same amount. It sits at another point of the same trade-off, not above it.</p>
+        <p>With 500 stored examples, PCD minus ER is <span class="num">+0.4 ± 1.5</span> in final accuracy (6/9), with <span class="num">−5.6 ± 2.1</span> in forgetting and <span class="num">−5.3 ± 2.6</span> in learning accuracy: PCD forgets less and learns each new task less well, by about the same amount. It sits at another point of the same trade-off, not above it. The chart can be switched between the three metrics.</p>
         <p>PCD is ahead of GEM by <span class="num">+6.2 ± 2.1</span> (9/9), but ER beats GEM by a similar <span class="num">+6.3 ± 2.2</span>, so the advantage is consistent with coming from replay in the update, not from the constraint.</p>
         <p>Why so little changes: with replay in the primary and <span class="v">τ = 0</span>, only <span class="num">5.8%</span> of the walls are active on CIFAR-100 (<span class="num">49.7%</span> on Split MNIST), and a PCD step with no active wall is an ER step. The larger memory was run to test whether a very small memory explains the cost of the margin. It does not: the cost grows.</p>
       </div>
