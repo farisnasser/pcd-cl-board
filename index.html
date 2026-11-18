@@ -195,7 +195,7 @@
           <p class="ledger-head">One training step</p>
           <p class="ledger-sub">While the model trains on task <i>t</i>, with <i>t</i> − 1 past tasks.</p>
           <ol>
-            <li><span class="lab">Primary</span>Compute the new task's gradient <span class="v">g<sub>0</sub></span>. By default the minibatch is joined by a replay minibatch from the memory.</li>
+            <li><span class="lab">Primary</span>Compute the new task's gradient <span class="v">g<sub>0</sub></span>. In the rehearsal form the new minibatch is, by default, joined by a replay minibatch from the memory.</li>
             <li class="hot"><span class="lab">Walls</span>Compute one gradient <span class="v">g<sub>j</sub></span> per past task: on its stored examples, or on its EWC penalty.</li>
             <li class="hot"><span class="lab">Normalize</span>Divide each gradient by the running estimate of its own length.</li>
             <li class="hot"><span class="lab">Project</span>Set the margins <span class="v">τ<sub>j</sub></span> and solve the program for <span class="v">d̃<sup>*</sup></span>. Only active walls change the step.</li>
@@ -354,7 +354,7 @@
       <div><dt>Models and budget</dt><dd>A multilayer perceptron with two hidden layers of 256 units, 1 epoch per task; a reduced ResNet-18, 5 epochs per task. Batch size 32, plain SGD with no momentum and no weight decay.</dd></div>
       <div><dt>Runs</dt><dd>44 arms &times; 9 runs = 396 final test-split runs, all finished. Each arm: seeds 0, 1, 2 crossed with three fixed class orders.</dd></div>
       <div><dt>Memory</dt><dd>500 stored examples on Split MNIST; 500 and 2000 on Split CIFAR-100 (5 and 20 images per class). GEM and PCD keep the same class-balanced memory; ER keeps a reservoir sample of the same size.</dd></div>
-      <div><dt>Tuning</dt><dd>Ten percent of the training data held out as a validation split. Learning rate, GEM's memory strength, PCD's margin, EWC's weight: all chosen there, on the same grid sizes. Several picks sit at a grid edge, so the paper writes "tuned on the same grid", never "fully tuned".</dd></div>
+      <div><dt>Tuning</dt><dd>Ten percent of the training data held out as a validation split. Learning rate, GEM's memory strength, PCD's margin and EWC's weight were all chosen there. Several picks sit at a grid edge, so the paper writes "tuned on the same grid", never "fully tuned".</dd></div>
       <div><dt>Post hoc</dt><dd>301 further test runs finished in a first post hoc round (5 diverged, all of them EWC at its largest strength), and a second round followed. They are labelled as post hoc wherever they appear and change no verdict.</dd></div>
     </dl>
   </div>
@@ -484,7 +484,7 @@
       </article>
       <article class="card posthoc rise">
         <div class="no">Post hoc 05</div>
-        <h3>The cost of a margin on CIFAR-100 is not the normalizer</h3>
+        <h3>The cost of a margin on <span style="white-space:nowrap">CIFAR-100</span> is not the normalizer</h3>
         <p>Switching the scale normalizer off does not remove the cost: the un-normalized margin ends <span class="num">−1.3 ± 0.9</span> from <span class="v">τ = 0</span>, still supported. With 200 stored examples the margin does not become a gain either (<span class="num">−0.4 ± 0.6</span>, on a second machine, nothing retuned).</p>
         <p>This rests on one value of <span class="v">τ</span> whose meaning changes with the normalizer, so it does not show that the normalizer plays no part. Why corrected steps forget more on test data remains open.</p>
       </article>

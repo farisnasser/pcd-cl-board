@@ -370,6 +370,15 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:var(--rule);bo
 .ladders{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--u5);margin-top:var(--u6);}
 .ladders .chart{--namecol:44%;--valcol:86px;padding:var(--u4);box-shadow:var(--drop);}
 .ladders .chart-title{font-size:22px;}
+@media (min-width:1101px){
+  /* three narrow panels side by side: name and value on one line, the track below at full width */
+  .ladders .row{grid-template-columns:minmax(0,1fr) auto;gap:0 var(--u3);padding:6px 0 4px;}
+  .ladders .row .name{grid-column:1;}
+  .ladders .row .val{grid-column:2;grid-row:1;}
+  .ladders .row .track,.ladders .row .ticks{grid-column:1 / -1;}
+  .ladders .row.axis .name,.ladders .row.axis .val{display:none;}
+  .ladders .legend{font-size:12.5px;gap:var(--u2) var(--u4);}
+}
 
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
 
@@ -448,6 +457,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,video:focus-visible{out
   .timeline li{border-right:0;border-bottom:var(--rule);}
   .timeline li:last-child{border-bottom:0;}
 }
+@media (max-width:760px){
+  .cards.two,.cards.three,.cards.four{grid-template-columns:minmax(0,1fr);}
+}
 @media (max-width:620px){
   body{font-size:16.5px;}
   .shell{padding:0 var(--u4);}
@@ -483,7 +495,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,video:focus-visible{out
   .conds{grid-template-columns:1fr;}
   .limits li{padding:var(--u4) var(--u4) var(--u4) 56px;font-size:16px;}
   .limits li::before{left:var(--u4);top:var(--u4);}
-  .verdicts,.verdicts tbody,.verdicts tr,.verdicts td,.verdicts th{display:block;}
+  .verdicts,.verdicts caption,.verdicts tbody,.verdicts tr,.verdicts td,.verdicts th{display:block;}
+  .verdicts caption{padding:var(--u4) var(--u4) var(--u3);border-bottom:var(--rule);}
   .verdicts thead{display:none;}
   .verdicts tbody th{padding-bottom:0;border-bottom:0;white-space:normal;}
   .verdicts td:not(:last-child){padding-bottom:var(--u1);border-bottom:0;}

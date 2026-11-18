@@ -118,6 +118,8 @@
   function forest(id, rows, metric, opts) {
     var fig = document.getElementById(id);
     if (!fig || !rows) return;
+    fig.style.setProperty('--namecol', '31%');
+    fig.style.setProperty('--valcol', '118px');
     head(fig, opts.title, opts.sub);
     var sc = scale(opts.min, opts.max), last = '';
     rows.forEach(function (r) {
@@ -153,7 +155,7 @@
       marks.push(at('mk circle teal fill', sc(r.pcdewc.mean)));
       fig.appendChild(row({
         name: 'Penalty scale c = ' + sup[r.c],
-        sub: 'EWC ' + r.ewc.label + ' · PCD-EWC ' + r.pcdewc.label,
+        sub: 'EWC ' + r.ewc.label + '<br>PCD-EWC ' + r.pcdewc.label,
         marks: marks,
         val: r.diff.label + '<small>' + r.diff.sign + ' pairs agree</small>' + read(r.diff.supported)
       }));
