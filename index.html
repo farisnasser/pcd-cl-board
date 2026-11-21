@@ -38,7 +38,7 @@
   <a href="#mapping" data-name="PCD for CL" aria-label="PCD for continual learning"><i></i></a>
   <a href="#design" data-name="Study design" aria-label="Study design"><i></i></a>
   <a href="#results" data-name="Results" aria-label="Results"><i></i></a>
-  <a href="#posthoc" data-name="Post hoc" aria-label="Post hoc findings"><i></i></a>
+  <a href="#posthoc" data-name="Analysis" aria-label="Further analysis"><i></i></a>
   <a href="#scope" data-name="Scope" aria-label="Scope"><i></i></a>
   <a href="#cite" data-name="Cite" aria-label="Cite"><i></i></a>
 </nav>
@@ -73,7 +73,7 @@
     <p class="over rise">Continual learning &middot; a controlled study</p>
     <h1 class="rise">Old tasks as walls.<br/>Does a margin help?
       <span class="name">PCD-CL: Priority-Constrained Descent for Continual Learning</span></h1>
-    <p class="hero-sub rise">We make the <em>new task the primary objective</em> and <em>every past task a constraint</em>, then test under one frozen, pre-registered protocol what the margin, the primary and a priority hierarchy each buy. We propose no new constraint. The outcome is mostly negative, and fully reported.</p>
+    <p class="hero-sub rise">We make the <em>new task the primary objective</em> and <em>every past task a constraint</em>, then test under one frozen, pre-registered protocol what the margin, the primary and a priority hierarchy each buy. The outcome is mostly negative, and fully reported.</p>
 
     <div class="people rise">
       <span class="who">Faris Nasser</span>
@@ -284,9 +284,9 @@
         <p>Every rule sets <span class="v">τ<sub>j</sub> = τ̄ w<sub>j</sub></span> with weights of mean one, so all rules spend the same mean margin and differ only in where they spend it. <code>constant</code> is the shared margin, <code>oldest</code> gives older tasks larger margins, and <code>forgetting</code> follows how far each task's stored-example loss has slipped. The <code>sqrt</code> schedule shrinks the shared margin to <span class="v">τ<sub>0</sub>/√k</span> as tasks accumulate.</p>
       </article>
       <article class="card ink rise">
-        <div class="no">Not new</div>
-        <h3>What this study does not claim</h3>
-        <p>With <span class="v" style="color:var(--teal-mark)">τ = 0</span>, raw gradients, the new-only primary and no rescaling, the program is GEM's problem. ε-SOFT-GEM is already a unit-normalized positive margin with one secondary. The PCD paper says both itself. Neither the constraint nor the margin is new: the open question is which parts of PCD change continual-learning behaviour, in which setting, and at what cost.</p>
+        <div class="no">Relation to GEM</div>
+        <h3>PCD and the GEM family</h3>
+        <p>With <span class="v" style="color:var(--teal-mark)">τ = 0</span>, raw gradients, the new-only primary and no rescaling, the program is GEM's problem. ε-SOFT-GEM is already a unit-normalized positive margin with one secondary. The PCD paper notes both. The question is which parts of PCD change continual-learning behaviour, in which setting, and at what cost.</p>
       </article>
     </div>
   </div>
@@ -319,10 +319,10 @@
         <p class="hyp"><b>H4a</b> At the same mean margin, the forgetting rule has lower forgetting than one shared margin, at a cost of at most 2 points of learning accuracy. <b>H4b</b> The shrinking schedule has higher learning accuracy than a constant margin, at a cost of at most 1 point of forgetting.</p>
       </article>
       <article class="card posthoc rise">
-        <div class="no">RQ4 &middot; post hoc only</div>
+        <div class="no">RQ4 &middot; outside the main runs</div>
         <h3>Task boundaries</h3>
         <p>What should PCD's running averages do when a new task starts: carry over, or restart?</p>
-        <p class="hyp"><b>H3</b> Restarting them lowers the normalization error after a boundary, and forgetting. Not in the final runs; tested post hoc only.</p>
+        <p class="hyp"><b>H3</b> Restarting them lowers the normalization error after a boundary, and forgetting. Not among the main arms; tested afterwards at fixed settings.</p>
       </article>
     </div>
 
@@ -355,7 +355,7 @@
       <div><dt>Runs</dt><dd>44 arms &times; 9 runs = 396 final test-split runs, all finished. Each arm: seeds 0, 1, 2 crossed with three fixed class orders.</dd></div>
       <div><dt>Memory</dt><dd>500 stored examples on Split MNIST; 500 and 2000 on Split CIFAR-100 (5 and 20 images per class). GEM and PCD keep the same class-balanced memory; ER keeps a reservoir sample of the same size.</dd></div>
       <div><dt>Tuning</dt><dd>Ten percent of the training data held out as a validation split. Learning rate, GEM's memory strength, PCD's margin and EWC's weight were all chosen there. Several picks sit at a grid edge, so the paper writes "tuned on the same grid", never "fully tuned".</dd></div>
-      <div><dt>Post hoc</dt><dd>301 further test runs finished in a first post hoc round (5 diverged, all of them EWC at its largest strength) and 276 in a second, 87 of them on a second machine. They are labelled as post hoc wherever they appear and change no verdict.</dd></div>
+      <div><dt>Further analysis</dt><dd>Experiments designed after the main comparisons, to explain them. They use fixed settings on the test split unless a setting is marked as tuned on validation, are read by the same rule, and change no verdict.</dd></div>
     </dl>
   </div>
 </section>
@@ -434,7 +434,7 @@
         <tr><th scope="row">H2a, H2b &middot; RQ2</th><td><span class="read yes">supported</span></td><td>In task-incremental accuracy: +1.7 ± 0.9 averaged over the scales, and a supported gain at each scale. Not in class-incremental accuracy (−0.6 ± 0.8).</td></tr>
         <tr><th scope="row">H4a &middot; RQ3</th><td><span class="read no">not supported</span></td><td>On the nine pairs, no comparison of the forgetting rule with a shared margin is separated in forgetting.</td></tr>
         <tr><th scope="row">H4b &middot; RQ3</th><td><span class="read no">by its letter only</span></td><td>Holds by its letter on Split MNIST only. A gain of under a tenth of a point of learning accuracy is not a useful one.</td></tr>
-        <tr><th scope="row">H3 &middot; RQ4</th><td><span class="read no">no registered test</span></td><td>Tested post hoc only, where it is not supported in three of four settings.</td></tr>
+        <tr><th scope="row">H3 &middot; RQ4</th><td><span class="read no">no registered test</span></td><td>Tested at fixed settings outside the main runs, where it is not supported in three of four settings.</td></tr>
       </tbody>
     </table>
   </div>
@@ -443,32 +443,32 @@
 <!-- ========================= POST HOC ======================== -->
 <section id="posthoc" class="band posthoc-band">
   <div class="shell">
-    <p class="tag is-posthoc rise">Post hoc &middot; not pre-registered</p>
-    <h2 class="rise">After the verdicts: what the extra runs add.</h2>
+    <p class="tag is-posthoc rise">Further analysis</p>
+    <h2 class="rise">Where the margin helps, and why it hurts.</h2>
     <div class="posthoc-note rise">
-      <p><strong>Read this section differently.</strong> These runs were designed after results had been read, in two rounds. They are not pre-registered and they change no verdict. Their questions, arms and predictions were written down before they ran, all of them are reported, and they are read by the same rule. Many comparisons are read here with no correction for multiplicity, and several supported effects are a few tenths of a point, so no claim rests on any single one.</p>
+      <p><strong>Read this section differently.</strong> These experiments were designed after the main comparisons, to explain them, and they change no verdict. They are read by the same rule, many comparisons are read with no correction for multiplicity, and several supported effects are a few tenths of a point, so no claim rests on any single one.</p>
     </div>
 
     <div class="pair">
       <div class="stack">
-        <figure class="chart posthoc dense rise" id="chartSweep" role="group" aria-label="Post hoc: final accuracy on Split MNIST against the number of stored examples"></figure>
+        <figure class="chart posthoc dense rise" id="chartSweep" role="group" aria-label="Analysis: final accuracy on Split MNIST against the number of stored examples"></figure>
         <article class="card posthoc rise">
-          <div class="no">Post hoc 01</div>
+          <div class="no">Analysis 01</div>
           <h3>With little memory, a margin matters. PCD's and GEM's do the same job.</h3>
           <p>On Split MNIST with 100 stored examples and every method retuned at that size, ER ends at <span class="num">74.1 ± 1.1</span>, GEM at <span class="num">82.3 ± 0.9</span> and PCD at <span class="num">82.7 ± 0.9</span>. PCD minus ER is <span class="num">+8.6 ± 1.6</span> (9/9). PCD minus GEM is <span class="num">+0.4 ± 0.3</span> (8/9): it passes the rule, but it is under half a point and GEM's pick is at the edge of its grid, so the two are read as level.</p>
           <p>What both need is a margin: PCD's is worth <span class="num">+4.6 ± 1.1</span> at the tuned setting, and GEM's pick moved to a memory strength of 4.</p>
         </article>
       </div>
       <div class="stack">
-        <figure class="chart posthoc rise" id="chartScale" role="group" aria-label="Post hoc: task-incremental accuracy of PCD-EWC across penalty scales for two values of epsilon"></figure>
+        <figure class="chart posthoc rise" id="chartScale" role="group" aria-label="Analysis: task-incremental accuracy of PCD-EWC across penalty scales for two values of epsilon"></figure>
         <article class="card posthoc rise">
-          <div class="no">Post hoc 02</div>
+          <div class="no">Analysis 02</div>
           <h3>Scale invariance holds once ε is small</h3>
           <p>At one fixed setting, PCD-EWC's task-incremental accuracy spans <span class="num">2.46</span> points across the five penalty scales with the default constant and <span class="num">0.13</span> points with <span class="v">ε = 10⁻¹⁶</span>. EWC at one learning rate spans <span class="num">3.5</span> points across four values of its strength, and at the largest only 4 of nine runs finish.</p>
           <p>The mechanism behind H2 works at this setting; the default constant hid it at small penalties. This does not change the verdict on H2.</p>
         </article>
         <article class="card posthoc rise">
-          <div class="no">Post hoc 03</div>
+          <div class="no">Analysis 03</div>
           <h3>The lead over EWC survives a wider grid</h3>
           <p>EWC's frozen pick was the largest strength that stayed stable in its grid. Retuned on a wider grid at <span class="v">c = 1</span>, EWC's pick moves, and PCD-EWC stays <span class="num">+1.20 ± 0.69</span> ahead (9/9).</p>
           <p>Only the baseline's grid was widened, so this check could only shrink the lead.</p>
@@ -478,21 +478,41 @@
 
     <div class="cards three">
       <article class="card posthoc rise">
-        <div class="no">Post hoc 04 &middot; RQ4</div>
+        <div class="no">Analysis 04 &middot; RQ4</div>
         <h3>Restarting the normalizer buys no final accuracy</h3>
         <p>The boundary modes <code>reset</code> and <code>bank</code> change nothing with 500 stored examples. With 100, <code>reset</code> lowers forgetting (<span class="num">−1.8 ± 0.5</span>), though not through a better normalizer, and final accuracy is unchanged (<span class="num">+0.1 ± 0.3</span>).</p>
       </article>
       <article class="card posthoc rise">
-        <div class="no">Post hoc 05</div>
+        <div class="no">Analysis 05</div>
         <h3>The cost of a margin on <span style="white-space:nowrap">CIFAR-100</span> is not the normalizer</h3>
-        <p>Switching the scale normalizer off does not remove the cost: the un-normalized margin ends <span class="num">−1.3 ± 0.9</span> from <span class="v">τ = 0</span>, still supported. With 200 stored examples the margin does not become a gain either (<span class="num">−0.4 ± 0.6</span>, on a second machine, nothing retuned).</p>
-        <p>This rests on one value of <span class="v">τ</span> whose meaning changes with the normalizer, so it does not show that the normalizer plays no part. Why corrected steps forget more on test data remains open.</p>
+        <p>Switching the scale normalizer off does not remove the cost: the un-normalized margin ends <span class="num">−1.3 ± 0.9</span> from <span class="v">τ = 0</span>, still supported. With 200 stored examples the margin does not become a gain either (<span class="num">−0.4 ± 0.6</span>, nothing retuned).</p>
+        <p>This rests on one value of <span class="v">τ</span> whose meaning changes with the normalizer, so it does not show that the normalizer plays no part.</p>
       </article>
       <article class="card posthoc rise">
-        <div class="no">Post hoc 06</div>
+        <div class="no">Analysis 06</div>
         <h3>Three dials on one trade-off</h3>
         <p>GEM without its memory strength ends <span class="num">−33.2 ± 3.1</span> points from GEM with it on Split MNIST: PCD at <span class="v">τ = 0</span> without replay behaves as GEM without its memory strength. Against a GEM with memory strength 2, above its grid, PCD's lead in final accuracy at learning rate 0.03 is not separated (<span class="num">+0.3 ± 0.7</span>).</p>
         <p>PCD's margin, replay inside the primary and GEM's memory strength all push the update toward the old tasks. The margin is a smooth way to move GEM's wall, not an independent source of protection.</p>
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card posthoc rise">
+        <div class="no">Analysis 07</div>
+        <h3>On CIFAR-100 the walls add nothing over replay on the same memory</h3>
+        <p>With its walls switched off, PCD takes ER's update on PCD's memory. On CIFAR-100 the walls then change final accuracy by <span class="num">−0.0 ± 1.1</span>, and the memory accounts for the whole trade against ER: <span class="num">−5.7 ± 2.4</span> in forgetting and <span class="num">−5.5 ± 2.7</span> in learning accuracy.</p>
+        <p>On Split MNIST with 100 stored examples the walls with their margin are worth <span class="num">+10.6 ± 1.8</span>.</p>
+      </article>
+      <article class="card posthoc rise">
+        <div class="no">Analysis 08</div>
+        <h3>FedPCD's normalization: more on Split MNIST, not selected on CIFAR-100</h3>
+        <p>Normalizing each gradient by its own length at every step, as FedPCD does, makes the margin 0.75 worth <span class="num">+2.1 ± 0.9</span> on Split MNIST, against <span class="num">+0.9 ± 0.5</span> with the running average.</p>
+        <p>On CIFAR-100 a margin of 0.1 gains <span class="num">+1.1 ± 0.9</span> on the test split, with task-incremental accuracy <span class="num">−4.1 ± 2.0</span>, but the validation split does not select it over <span class="v">τ = 0</span>.</p>
+      </article>
+      <article class="card posthoc rise">
+        <div class="no">Analysis 09</div>
+        <h3>Why a margin costs accuracy on CIFAR-100: three explanations, none confirmed</h3>
+        <p>Switching the normalizer off does not remove the cost. The margin does not lower the mean loss on the stored examples, although it lowers it in 8 of 9 pairs. A wall sees its task under that task's own BatchNorm statistics, but walls computed under running statistics make the cost larger (<span class="num">−4.7 ± 2.2</span> against <span class="num">−1.8 ± 1.1</span>), not smaller.</p>
+        <p>With those walls the margin trades learning accuracy (<span class="num">−31.0 ± 2.1</span>) for forgetting (<span class="num">−27.0 ± 2.6</span>), and the margin picked on validation is not separated from <span class="v">τ = 0</span>.</p>
       </article>
     </div>
   </div>
@@ -504,18 +524,18 @@
     <p class="tag rise">Scope</p>
     <h2 class="rise">What this study shows, and what it does not claim.</h2>
     <ul class="limits">
-      <li class="rise"><strong>No new constraint, and no new method.</strong> Constraining an update against past-task gradients is GEM and A-GEM, and a normalized positive margin is ε-SOFT-GEM. This is a controlled comparison of which parts of PCD change continual-learning behaviour.</li>
+      <li class="rise"><strong>PCD with <span class="v">τ = 0</span> is GEM's constraint.</strong> With raw gradients and the new-only primary it reduces to GEM and A-GEM, and a normalized positive margin is ε-SOFT-GEM. The study asks which parts of PCD change continual-learning behaviour.</li>
       <li class="rise"><strong>The constraint is a first-order statement.</strong> A positive dot product means the secondary loss decreases only for a small enough step on a smooth loss. The secondary losses are computed on a few stored examples or on a penalty, and progress on these stand-ins is not a guarantee on the true loss of a past task. PCD's result on where its direction vanishes concerns fixed points of the update, not the convergence of a training run. None of this rules out forgetting.</li>
-      <li class="rise"><strong>Two small benchmarks, one network each</strong>, at most ten tasks, and plain SGD. The final runs used one machine.</li>
+      <li class="rise"><strong>Two small benchmarks, one network each</strong>, at most ten tasks, and plain SGD.</li>
       <li class="rise"><strong>Small grids.</strong> Several picks sit at a grid edge or are near-ties. Class order 0 was also the tuning order, so every comparison is repeated on the other two orders alone: of 105 readings, 12 change.</li>
       <li class="rise"><strong>Not the same memory contents as ER.</strong> ER keeps a reservoir sample that can include the current task; PCD and GEM keep a class-balanced memory of past tasks. With 2000 stored examples on CIFAR-100, PCD and GEM also differ in BatchNorm handling.</li>
       <li class="rise"><strong>The regularization result is narrow.</strong> RQ2 holds in task-incremental accuracy only, on the easiest benchmark. The EWC baseline is the framework's online EWC, which merges all past tasks into one penalty while PCD-EWC keeps one wall per task. Separating the two needs an EWC with one penalty per task, which was not run.</li>
       <li class="rise"><strong>All other conclusions concern class-incremental learning with a small memory.</strong> The tuned low-memory comparison was run on Split MNIST only, and GEM's pick there is at the largest memory strength tried.</li>
-      <li class="rise"><strong>RQ4 was tested post hoc only</strong>, and every post hoc result is exploratory: labelled as such, and unable to change a registered verdict.</li>
+      <li class="rise"><strong>RQ4 was not among the main arms</strong>, and every further analysis is exploratory and cannot change a verdict.</li>
       <li class="rise"><strong>No wall-clock comparison.</strong> In gradient evaluations, PCD and GEM cost one per past task on top of the primary's at every step, against one for ER. On CIFAR-100 the projection buys no final accuracy over replay alone.</li>
-      <li class="rise"><strong>One question stays open.</strong> The idea that a margin costs accuracy on CIFAR-100 because the stored examples are fit too hard is not confirmed, and why corrected steps forget more on test data is not explained here.</li>
+      <li class="rise"><strong>The cause of the margin's cost on CIFAR-100 is not identified.</strong> Three explanations were tested (the normalizer, over-fitting of the stored examples, BatchNorm statistics in the wall passes) and none is confirmed. The direct test, the same network without batch statistics, was not run.</li>
     </ul>
-    <p class="cap rise">Natural next tests for PCD: secondaries that are not a handful of stored images (a held-out memory, distillation targets), longer task sequences, and the regularization form against an EWC with one penalty per task.</p>
+    <p class="cap rise">Natural next tests for PCD: the same study on a network without batch statistics, secondaries that are not a handful of stored images (a held-out memory, distillation targets), longer task sequences, and the regularization form against an EWC with one penalty per task.</p>
   </div>
 </section>
 

@@ -202,7 +202,7 @@
     if (!fig || !D.sweep) return;
     fig.style.setProperty('--valcol', '92px');
     fig.style.setProperty('--namecol', '38%');
-    head(fig, 'Memory size on Split MNIST', 'final accuracy, class-incremental (%) · mean ± std over nine runs', 'Post hoc');
+    head(fig, 'Memory size on Split MNIST', 'final accuracy, class-incremental (%) · mean ± std over nine runs', 'Analysis');
     var sc = scale(68, 94);
     var NAME = { er: 'ER', gem: 'GEM', pcd0: 'PCD, τ = 0', 'pcd0.75': 'PCD, τ = 0.75', pcd: 'PCD, τ = 0.25' };
     function one(key, p) {
@@ -226,7 +226,7 @@
     if (!fig || !D.scale) return;
     fig.style.setProperty('--valcol', '150px');
     fig.style.setProperty('--namecol', '22%');
-    head(fig, 'Scale invariance, tested directly', 'PCD-EWC at one fixed setting · final accuracy, task-incremental (%)', 'Post hoc');
+    head(fig, 'Scale invariance, tested directly', 'PCD-EWC at one fixed setting · final accuracy, task-incremental (%)', 'Analysis');
     var sc = scale(93, 100), sup = { '0.01': '10⁻²', '0.1': '10⁻¹', '1': '1', '10': '10', '100': '10²' };
     D.scale.c.forEach(function (c, i) {
       var a = D.scale.series[0].points[i], b = D.scale.series[1].points[i], marks = [];
