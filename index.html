@@ -112,10 +112,10 @@
   <div class="shell">
     <p class="tag rise">TL;DR</p>
     <div class="brief rise">
-      <p class="brief-text">A network that learns tasks one after another tends to lose the earlier ones. Priority-Constrained Descent (PCD) follows a primary gradient as closely as possible while requiring a scale-normalized fraction <span class="v">τ</span> of first-order progress on every secondary objective. <span class="mark">We apply it to continual learning: the new task is the primary, and every past task is a secondary, a wall the update may not cross.</span> With <span class="v">τ = 0</span> this is algorithmically Gradient Episodic Memory (GEM), and a normalized positive margin already exists in ε-SOFT-GEM, so nothing here is a new constraint. What we add is a controlled comparison: hypotheses written before the runs, every setting fixed on a validation split, and one rule for reading every difference. The result is <strong>mostly negative</strong>.</p>
+      <p class="brief-text">A network that learns tasks one after another tends to lose the earlier ones. Priority-Constrained Descent (PCD) follows a primary gradient as closely as possible while requiring a scale-normalized fraction <span class="v">τ</span> of first-order progress on every secondary objective. <span class="mark">We apply it to continual learning: the new task is the primary, and every past task is a secondary, a wall the update may not cross.</span> With <span class="v">τ = 0</span> this is algorithmically Gradient Episodic Memory (GEM), and a normalized positive margin already exists in ε-SOFT-GEM, so nothing here is a new constraint. What we add is a controlled comparison: hypotheses written before the runs, every setting fixed on a validation split, and one rule for reading every difference. Under plain SGD the result is <strong>mostly negative</strong>. Under Adam, examined more briefly, PCD's walls help beyond replay, at low accuracy on Split CIFAR-100.</p>
       <div class="facts">
         <span class="fact"><b>396</b> final test-split runs <span class="sub">44 arms &times; 3 seeds &times; 3 class orders</span></span>
-        <span class="fact"><b>+1.8 <small>± 1.7</small></b> points of final accuracy, PCD with a margin minus Experience Replay <span class="sub">Split MNIST &middot; supported</span></span>
+        <span class="fact"><b>+1.8 <small>± 1.7</small></b> points of final accuracy, PCD with a margin minus Experience Replay <span class="sub">Split MNIST &middot; supported, but not once ER is retuned</span></span>
         <span class="fact"><b>+0.4 <small>± 1.5</small></b> points, PCD minus Experience Replay <span class="sub">Split CIFAR-100, 500 stored &middot; not separated</span></span>
         <span class="fact"><b>+1.7 <small>± 0.9</small></b> points, PCD-EWC minus EWC, the one consistent gain <span class="sub">task-incremental &middot; supported</span></span>
       </div>
@@ -368,7 +368,7 @@
     <p class="lede rise">Everything in this section is a test-split result of the frozen final runs. With a replay memory, PCD's margin does the same job as replay inside the update or as GEM's memory strength, and adds little once one of them is present.</p>
 
     <div class="tally">
-      <div class="rise"><div class="big">+1.8 <small>± 1.7</small></div><span class="read yes">supported</span><p><b>Split MNIST.</b> Final accuracy of PCD with <span class="v">τ = 0.75</span> minus ER. Against a tuned GEM the same PCD is within about a point: +0.2 ± 1.2 and +0.7 ± 0.6 at the two learning rates compared.</p></div>
+      <div class="rise"><div class="big">+1.8 <small>± 1.7</small></div><span class="read yes">supported</span><p><b>Split MNIST.</b> Final accuracy of PCD with <span class="v">τ = 0.75</span> minus ER. Against a tuned GEM the same PCD is within about a point: +0.2 ± 1.2 and +0.7 ± 0.6 at the two learning rates compared. With ER retuned above its grid, the lead over ER is +1.4 ± 1.6 and no longer separated.</p></div>
       <div class="rise"><div class="big">+0.4 <small>± 1.5</small></div><span class="read no">not separated</span><p><b>Split CIFAR-100, 500 stored examples.</b> PCD minus ER. PCD's tuned margin here is zero, and a positive one costs accuracy: <span class="v">τ = 0.75</span> changes it by −1.8 ± 1.1, and by −4.8 ± 2.1 with 2000 stored examples.</p></div>
       <div class="rise"><div class="big">+1.7 <small>± 0.9</small></div><span class="read yes">supported</span><p><b>No memory, task-incremental.</b> PCD-EWC minus EWC, averaged over five penalty scales. The one consistent gain of the registered runs, on the easiest benchmark, and not for the reason hypothesized.</p></div>
     </div>
@@ -396,8 +396,8 @@
       <div class="finding-text rise">
         <span class="q">RQ1 &middot; Split CIFAR-100</span>
         <h3>Level with replay. A margin costs accuracy.</h3>
-        <p>With 500 stored examples, PCD minus ER is <span class="num">+0.4 ± 1.5</span> in final accuracy (6/9), with <span class="num">−5.6 ± 2.1</span> in forgetting and <span class="num">−5.3 ± 2.6</span> in learning accuracy: PCD forgets less and learns each new task less well, by about the same amount. It sits at another point of the same trade-off, not above it. The chart can be switched between the three metrics.</p>
-        <p>PCD is ahead of GEM by <span class="num">+6.2 ± 2.1</span> (9/9), but ER beats GEM by a similar <span class="num">+6.3 ± 2.2</span>, so the advantage is consistent with coming from replay in the update, not from the constraint.</p>
+        <p>With 500 stored examples, PCD minus ER is <span class="num">+0.4 ± 1.5</span> in final accuracy (6/9), with <span class="num">−5.6 ± 2.1</span> in forgetting and <span class="num">−5.3 ± 2.6</span> in learning accuracy: PCD forgets less and learns each new task less well, by about the same amount. It sits at another point of the same trade-off, not above it. Part of this trade may be an effect of the last batch of each epoch (Analysis 11). The chart can be switched between the three metrics.</p>
+        <p>PCD is ahead of GEM by <span class="num">+6.2 ± 2.1</span> (9/9), but ER beats GEM by a similar <span class="num">+6.3 ± 2.2</span>, so the advantage is consistent with coming from replay in the update, not from the constraint. About half of both leads is an effect of the last batch of each epoch (Analysis 11).</p>
         <p>Why so little changes: with replay in the primary and <span class="v">τ = 0</span>, only <span class="num">5.8%</span> of the walls are active on CIFAR-100 (<span class="num">49.7%</span> on Split MNIST), and a PCD step with no active wall is an ER step. The larger memory was run to test whether a very small memory explains the cost of the margin. It does not: the cost grows.</p>
       </div>
     </div>
@@ -440,13 +440,13 @@
   </div>
 </section>
 
-<!-- ========================= POST HOC ======================== -->
+<!-- ====================== FURTHER ANALYSIS ==================== -->
 <section id="posthoc" class="band posthoc-band">
   <div class="shell">
     <p class="tag is-posthoc rise">Further analysis</p>
     <h2 class="rise">Where the margin helps, and why it hurts.</h2>
     <div class="posthoc-note rise">
-      <p><strong>Read this section differently.</strong> These experiments were designed after the main comparisons, to explain them, and they change no verdict. They are read by the same rule, many comparisons are read with no correction for multiplicity, and several supported effects are a few tenths of a point, so no claim rests on any single one.</p>
+      <p><strong>Read this section differently.</strong> These experiments were designed after the main comparisons, to explain them, and they change no verdict. They are read by the same rule, many comparisons are read with no correction for multiplicity, and several supported effects are a few tenths of a point, so such small effects are tentative.</p>
     </div>
 
     <div class="pair">
@@ -515,6 +515,46 @@
         <p>With those walls the margin trades learning accuracy (<span class="num">−31.0 ± 2.1</span>) for forgetting (<span class="num">−27.0 ± 2.6</span>), and the margin picked on validation is not separated from <span class="v">τ = 0</span>.</p>
       </article>
     </div>
+    <div class="cards three">
+      <article class="card posthoc rise">
+        <div class="no">Analysis 10</div>
+        <h3>Under Adam, the walls help beyond replay</h3>
+        <p>The PCD paper trains with Adam, so the central comparisons were repeated under it. On Split MNIST the margin 0.75 is worth <span class="num">+1.6 ± 0.6</span> (9/9), and PCD ends <span class="num">+4.1 ± 0.9</span> above ER. A tuned GEM obtains <span class="num">+3.4 ± 0.8</span> of that lead.</p>
+        <p>On CIFAR-100, PCD ends <span class="num">+2.4 ± 0.6</span> above ER (9/9). With the walls switched off, the memory alone changes final accuracy by <span class="num">−0.0 ± 1.1</span>, and the walls at <span class="v">τ = 0</span> add <span class="num">+1.6 ± 1.0</span>. The limits: accuracy is low (ER 9.2%, PCD 11.5%), the learning rate sits at the edge of its grid, and GEM was not run under Adam on this benchmark.</p>
+      </article>
+      <article class="card posthoc rise">
+        <div class="no">Analysis 11</div>
+        <h3>The last batch of each epoch handicapped GEM</h3>
+        <p>Every CIFAR-100 epoch ends on a batch of 8 images, which lowers the learning accuracy of arms that take it without replay. With that batch dropped in every arm, PCD leads GEM by <span class="num">+3.3 ± 1.3</span> (9/9), about half of the lead in the main runs, and now through lower forgetting (<span class="num">−4.3 ± 1.9</span>).</p>
+        <p>ER leads GEM by a similar <span class="num">+3.8 ± 1.3</span>, and PCD stays level with ER (<span class="num">−0.5 ± 0.8</span>). The ranking of the methods does not change.</p>
+      </article>
+      <article class="card posthoc rise">
+        <div class="no">Analysis 12</div>
+        <h3>About half of the lead over EWC is per-task storage</h3>
+        <p>An EWC with one penalty per task, tuned at <span class="v">c = 1</span>, ends <span class="num">+0.65 ± 0.41</span> above online EWC in task-incremental accuracy. PCD-EWC ends <span class="num">+0.55 ± 0.37</span> above that per-task EWC (9/9).</p>
+        <p>So about half of PCD-EWC's lead belongs to keeping one penalty per task, and about half remains against the matched baseline, at one penalty scale.</p>
+      </article>
+    </div>
+    <div class="cards three">
+      <article class="card posthoc rise">
+        <div class="no">Analysis 13</div>
+        <h3>Without batch statistics, the cost is no longer separated</h3>
+        <p>With every BatchNorm layer replaced by group normalization and the learning rate retuned, the margin 0.75 changes final accuracy by <span class="num">−0.5 ± 0.7</span>, which is not separated. It still raises forgetting by <span class="num">+4.1 ± 2.1</span>.</p>
+        <p>That network is much weaker (12.7% without the margin, 12.2% with it), so this is consistent with a role of batch statistics but does not establish it.</p>
+      </article>
+      <article class="card posthoc rise">
+        <div class="no">Analysis 14 &middot; RQ3</div>
+        <h3>The priority rules do not help where the margin helps</h3>
+        <p>On CIFAR-100 with the new-only primary the margin itself is worth <span class="num">+4.4 ± 2.0</span>. Even there, neither rule improves on the shared margin: <span class="num">−0.3 ± 1.6</span> for <code>oldest</code> and <span class="num">+0.3 ± 1.9</span> for <code>forgetting</code>.</p>
+        <p>The <code>oldest</code> rule also does not move accuracy toward the oldest tasks.</p>
+      </article>
+      <article class="card posthoc rise">
+        <div class="no">Analysis 15</div>
+        <h3>The walls are expensive per step</h3>
+        <p>PCD and GEM compute one extra gradient per past task at every step, on all stored examples of that task. Alone on the GPU, ER takes about <span class="num">14</span> ms per step on CIFAR-100. The fastest PCD run took <span class="num">95</span> ms with 500 stored examples and <span class="num">333</span> ms with 2000.</p>
+        <p>The PCD runs shared the GPU with other runs, so these figures overstate its cost somewhat.</p>
+      </article>
+    </div>
   </div>
 </section>
 
@@ -526,16 +566,16 @@
     <ul class="limits">
       <li class="rise"><strong>PCD with <span class="v">τ = 0</span> is GEM's constraint.</strong> With raw gradients and the new-only primary it reduces to GEM and A-GEM, and a normalized positive margin is ε-SOFT-GEM. The study asks which parts of PCD change continual-learning behaviour.</li>
       <li class="rise"><strong>The constraint is a first-order statement.</strong> A positive dot product means the secondary loss decreases only for a small enough step on a smooth loss. The secondary losses are computed on a few stored examples or on a penalty, and progress on these stand-ins is not a guarantee on the true loss of a past task. PCD's result on where its direction vanishes concerns fixed points of the update, not the convergence of a training run. None of this rules out forgetting.</li>
-      <li class="rise"><strong>Two small benchmarks, one network each</strong>, at most ten tasks, and plain SGD.</li>
+      <li class="rise"><strong>Two small benchmarks, one network each</strong>, at most ten tasks. The main runs use plain SGD with one or five epochs per task, while the PCD paper trains with Adam for 300 epochs. Adam was examined only briefly.</li>
       <li class="rise"><strong>Small grids.</strong> Several picks sit at a grid edge or are near-ties. Class order 0 was also the tuning order, so every comparison is repeated on the other two orders alone: of 105 readings, 12 change.</li>
       <li class="rise"><strong>Not the same memory contents as ER.</strong> ER keeps a reservoir sample that can include the current task; PCD and GEM keep a class-balanced memory of past tasks. With 2000 stored examples on CIFAR-100, PCD and GEM also differ in BatchNorm handling.</li>
-      <li class="rise"><strong>The regularization result is narrow.</strong> RQ2 holds in task-incremental accuracy only, on the easiest benchmark. The EWC baseline is the framework's online EWC, which merges all past tasks into one penalty while PCD-EWC keeps one wall per task. Separating the two needs an EWC with one penalty per task, which was not run.</li>
+      <li class="rise"><strong>The regularization result is narrow.</strong> RQ2 holds in task-incremental accuracy only, on the easiest benchmark. The EWC baseline is the framework's online EWC, which merges all past tasks into one penalty while PCD-EWC keeps one wall per task. Against an EWC with one penalty per task, about half of the lead remains, at one penalty scale.</li>
       <li class="rise"><strong>All other conclusions concern class-incremental learning with a small memory.</strong> The tuned low-memory comparison was run on Split MNIST only, and GEM's pick there is at the largest memory strength tried.</li>
       <li class="rise"><strong>RQ4 was not among the main arms</strong>, and every further analysis is exploratory and cannot change a verdict.</li>
-      <li class="rise"><strong>No wall-clock comparison.</strong> In gradient evaluations, PCD and GEM cost one per past task on top of the primary's at every step, against one for ER. On CIFAR-100 the projection buys no final accuracy over replay alone.</li>
-      <li class="rise"><strong>The cause of the margin's cost on CIFAR-100 is not identified.</strong> Three explanations were tested (the normalizer, over-fitting of the stored examples, BatchNorm statistics in the wall passes) and none is confirmed. The direct test, the same network without batch statistics, was not run.</li>
+      <li class="rise"><strong>The constraint is expensive.</strong> PCD and GEM compute one gradient per past task on top of the primary's at every step, against one for ER, and are many times slower per step. Under plain SGD on CIFAR-100 the projection buys no final accuracy over replay alone.</li>
+      <li class="rise"><strong>The cause of the margin's cost on CIFAR-100 is not identified.</strong> Three explanations were tested (the normalizer, over-fitting of the stored examples, BatchNorm statistics in the wall passes) and none is confirmed. In a network without batch statistics the cost in final accuracy is no longer separated, but that network is much weaker and the margin still raises forgetting.</li>
     </ul>
-    <p class="cap rise">Natural next tests for PCD: the same study on a network without batch statistics, secondaries that are not a handful of stored images (a held-out memory, distillation targets), longer task sequences, and the regularization form against an EWC with one penalty per task.</p>
+    <p class="cap rise">Natural next tests for PCD: a network without batch statistics that matches the accuracy of the BatchNorm network, secondaries that are not a handful of stored images (a held-out memory, distillation targets), longer task sequences, and a full study under Adam with the long training schedule of the PCD paper.</p>
   </div>
 </section>
 
