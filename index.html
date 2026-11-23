@@ -112,7 +112,7 @@
   <div class="shell">
     <p class="tag rise">TL;DR</p>
     <div class="brief rise">
-      <p class="brief-text">A network that learns tasks one after another tends to lose the earlier ones. Priority-Constrained Descent (PCD) follows a primary gradient as closely as possible while requiring a scale-normalized fraction <span class="v">τ</span> of first-order progress on every secondary objective. <span class="mark">We apply it to continual learning: the new task is the primary, and every past task is a secondary, a wall the update may not cross.</span> With <span class="v">τ = 0</span> this is algorithmically Gradient Episodic Memory (GEM), and a normalized positive margin already exists in ε-SOFT-GEM, so nothing here is a new constraint. What we add is a controlled comparison: hypotheses written before the runs, every setting fixed on a validation split, and one rule for reading every difference. Under plain SGD the result is <strong>mostly negative</strong>. Under Adam, examined more briefly, the margin helps on Split MNIST. The Adam test on Split CIFAR-100 was not valid, and a corrected test is pending.</p>
+      <p class="brief-text">A network that learns tasks one after another tends to lose the earlier ones. Priority-Constrained Descent (PCD) follows a primary gradient as closely as possible while requiring a scale-normalized fraction <span class="v">τ</span> of first-order progress on every secondary objective. <span class="mark">We apply it to continual learning: the new task is the primary, and every past task is a secondary, a wall the update may not cross.</span> With <span class="v">τ = 0</span> this is algorithmically Gradient Episodic Memory (GEM), and a normalized positive margin already exists in ε-SOFT-GEM, so nothing here is a new constraint. What we add is a controlled comparison: hypotheses written before the runs, every setting fixed on a validation split, and one rule for reading every difference. Under plain SGD the result is <strong>mostly negative</strong>. Under Adam, examined more briefly, the Split CIFAR-100 findings return, and the margin still helps on Split MNIST.</p>
       <div class="facts">
         <span class="fact"><b>396</b> final test-split runs <span class="sub">44 arms &times; 3 seeds &times; 3 class orders</span></span>
         <span class="fact"><b>+1.8 <small>± 1.7</small></b> points of final accuracy, PCD with a margin minus Experience Replay <span class="sub">Split MNIST &middot; supported, but not once ER is retuned</span></span>
@@ -518,9 +518,9 @@
     <div class="cards three">
       <article class="card posthoc rise">
         <div class="no">Analysis 10</div>
-        <h3>Under Adam, the margin helps on Split MNIST</h3>
+        <h3>Under Adam, the CIFAR-100 answers return</h3>
         <p>The PCD paper trains with Adam, so the central comparisons were repeated under it. On Split MNIST the margin 0.75 is worth <span class="num">+1.6 ± 0.6</span> (9/9), and PCD ends <span class="num">+4.1 ± 0.9</span> above ER. A tuned GEM obtains <span class="num">+3.4 ± 0.8</span> of that lead.</p>
-        <p>On CIFAR-100 the Adam test was not valid. No method learned the last two tasks in class-incremental accuracy: each scored 0% right after training on them, at every learning rate tried. The comparison with ER under Adam on this benchmark is therefore not reported here, and a corrected test is pending.</p>
+        <p>On CIFAR-100, Adam with a loss over all outputs kept every arm from learning the last two tasks, so that comparison is not valid. With the loss restricted to the classes seen so far, every task is learned and ER ends at 18.0%. PCD with its selected margin then ends <span class="num">−0.2 ± 1.2</span> from ER (not separated), the walls change final accuracy by <span class="num">−0.1 ± 0.8</span>, and a margin of 0.75 changes it by <span class="num">−0.8 ± 0.5</span> (supported). This comparison changes the loss as well as the optimizer.</p>
       </article>
       <article class="card posthoc rise">
         <div class="no">Analysis 11</div>
